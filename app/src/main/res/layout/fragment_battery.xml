@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkBackground"
+    tools:context=".BatteryFragment">
+
+    <com.github.anastr.speedviewlib.SpeedView
+        android:id="@+id/speedViewPower"
+        android:layout_width="416dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:sv_centerCircleColor="@color/darkBackgroundVariant"
+        app:sv_centerCircleRadius="18dp"
+        app:sv_endDegree="360"
+        app:sv_indicator="NeedleIndicator"
+        app:sv_indicatorColor="@color/white"
+        app:sv_indicatorLightColor="@color/darkBackgroundVariant"
+        app:sv_indicatorWidth="16dp"
+        app:sv_markHeight="0px"
+        app:sv_maxSpeed="1000"
+        app:sv_minSpeed="-500"
+        app:sv_speedTextColor="@color/white"
+        app:sv_speedTextFormat="INTEGER"
+        app:sv_speedTextPadding="20dp"
+        app:sv_speedTextPosition="BOTTOM_RIGHT"
+        app:sv_speedTextSize="40sp"
+        app:sv_speedometerMode="NORMAL"
+        app:sv_startDegree="90"
+        app:sv_textColor="@color/white"
+        app:sv_textSize="0px"
+        app:sv_unit="@string/unitDisplayWatt"
+        app:sv_unitTextColor="@color/darkBorder"
+        app:sv_unitTextSize="0px"
+        app:sv_withTremble="false" />
+
+    <TextView
+        android:id="@+id/labelStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/threeDotPlaceholder"
+        android:textColor="@color/darkBorder"
+        android:textSize="12sp"
+        android:typeface="monospace"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/labelPowerFlow" />
+
+    <TextView
+        android:id="@+id/labelPowerFlow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="156dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/power"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/speedViewPower"
+        app:layout_constraintEnd_toEndOf="@+id/speedViewPower"
+        app:layout_constraintStart_toStartOf="@+id/speedViewPower"
+        app:layout_constraintTop_toTopOf="@+id/speedViewPower" />
+
+    <TextView
+        android:id="@+id/labelCapacity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/capacity"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toTopOf="@+id/progressBarBattery3"
+        app:layout_constraintStart_toStartOf="@+id/progressBarBattery1" />
+
+    <TextView
+        android:id="@+id/labelCells"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/cells"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:typeface="monospace"
+        app:layout_constraintStart_toStartOf="@+id/progressBarBattery1"
+        app:layout_constraintTop_toBottomOf="@+id/progressBarBattery3" />
+
+    <TextView
+        android:id="@+id/labelVoltage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="90dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/zeroDotZero"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewBattery"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewBattery" />
+
+    <TextView
+        android:id="@+id/labelTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="140dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/zeroClock"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/speedViewPower"
+        app:layout_constraintEnd_toStartOf="@+id/labelTimeUnit"
+        app:layout_constraintTop_toTopOf="@+id/speedViewPower" />
+
+    <TextView
+        android:id="@+id/labelVoltageUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/unitDisplayVolt"
+        android:textColor="@color/darkBorder"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/labelVoltage"
+        app:layout_constraintStart_toEndOf="@+id/labelVoltage" />
+
+    <TextView
+        android:id="@+id/labelTimeUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/unitDisplayHours"
+        android:textColor="@color/darkBorder"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/labelTime"
+        app:layout_constraintEnd_toEndOf="@+id/speedViewPower" />
+
+    <TextView
+        android:id="@+id/labelGaugeUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="294dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/unitDisplayWatt"
+        android:textColor="@color/darkBorder"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintEnd_toEndOf="@+id/speedViewPower"
+        app:layout_constraintStart_toStartOf="@+id/speedViewPower"
+        app:layout_constraintTop_toBottomOf="@+id/labelTimeUnit" />
+
+    <TextView
+        android:id="@+id/labelTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="90dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/zeroDotZero"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewTemperature"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewTemperature" />
+
+    <TextView
+        android:id="@+id/labelCurrent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="90dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/zeroDotZero"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewEnergy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewEnergy" />
+
+    <TextView
+        android:id="@+id/labelTemperatureUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/unitDisplayCelsius"
+        android:textColor="@color/darkBorder"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/labelTemperature"
+        app:layout_constraintStart_toEndOf="@+id/labelTemperature" />
+
+    <TextView
+        android:id="@+id/labelEnergyUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/unitDisplayAmpere"
+        android:textColor="@color/darkBorder"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/labelCurrent"
+        app:layout_constraintStart_toEndOf="@+id/labelCurrent" />
+
+    <TextView
+        android:id="@+id/labelTemperatureMaxUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/unitDisplayCelsius"
+        android:textColor="@color/darkBorder"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/labelTemperatureMax"
+        app:layout_constraintStart_toEndOf="@+id/labelTemperatureMax" />
+
+    <TextView
+        android:id="@+id/labelPowerUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/unitDisplayWattHours"
+        android:textColor="@color/darkBorder"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/labelPower"
+        app:layout_constraintStart_toEndOf="@+id/labelPower" />
+
+    <TextView
+        android:id="@+id/labelTemperatureMax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="250dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/zeroDotZero"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewTemperature"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewTemperature" />
+
+    <TextView
+        android:id="@+id/labelPower"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="250dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/zeroDotZero"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewEnergy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewEnergy" />
+
+    <TextView
+        android:id="@+id/labelPercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="250dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/zeroDotZero"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewBattery"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewBattery" />
+
+    <TextView
+        android:id="@+id/labelPercentageUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/aldrich"
+        android:text="@string/unitDisplayPercent"
+        android:textColor="@color/darkBorder"
+        android:textSize="24sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/labelPercentage"
+        app:layout_constraintStart_toEndOf="@+id/labelPercentage" />
+
+    <ImageView
+        android:id="@+id/imageViewBattery"
+        android:layout_width="49dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="130dp"
+        android:contentDescription="@string/connectedToBms"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_battery" />
+
+    <ImageView
+        android:id="@+id/imageViewEnergy"
+        android:layout_width="49dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="28dp"
+        android:contentDescription="@string/imageBattery"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewBattery"
+        app:srcCompat="@drawable/ic_bolt" />
+
+    <ImageView
+        android:id="@+id/imageViewTemperature"
+        android:layout_width="49dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="28dp"
+        android:contentDescription="@string/imageBattery"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewEnergy"
+        app:srcCompat="@drawable/ic_temperature" />
+
+    <ProgressBar
+        android:id="@+id/progressBarBattery1"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="60dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="40dp"
+        android:backgroundTintMode="src_over"
+        android:max="100"
+        android:min="0"
+        android:progress="0"
+        android:progressBackgroundTint="@color/darkBorder"
+        android:progressTint="@color/percentUnder100"
+        android:scaleY="2"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBarBattery3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/progressBarBattery3" />
+
+    <ProgressBar
+        android:id="@+id/progressBarBattery2"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="60dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="8dp"
+        android:backgroundTintMode="src_over"
+        android:max="100"
+        android:min="0"
+        android:progress="0"
+        android:progressBackgroundTint="@color/darkBorder"
+        android:progressTint="@color/percentUnder100"
+        android:scaleY="2"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBarBattery3"
+        app:layout_constraintStart_toEndOf="@+id/progressBarBattery1"
+        app:layout_constraintTop_toTopOf="@+id/progressBarBattery3" />
+
+    <ProgressBar
+        android:id="@+id/progressBarBattery3"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="60dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTintMode="src_over"
+        android:max="100"
+        android:min="0"
+        android:progress="0"
+        android:progressBackgroundTint="@color/darkBorder"
+        android:progressTint="@color/percentUnder100"
+        android:scaleY="2"
+        app:layout_constraintEnd_toStartOf="@+id/progressBarBattery4"
+        app:layout_constraintStart_toEndOf="@+id/progressBarBattery2"
+        app:layout_constraintTop_toBottomOf="@+id/speedViewPower" />
+
+    <ProgressBar
+        android:id="@+id/progressBarBattery4"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="60dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTintMode="src_over"
+        android:max="100"
+        android:min="0"
+        android:progress="0"
+        android:progressBackgroundTint="@color/darkBorder"
+        android:progressTint="@color/percentUnder100"
+        android:scaleY="2"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBarBattery3"
+        app:layout_constraintEnd_toStartOf="@+id/progressBarBattery5"
+        app:layout_constraintTop_toTopOf="@+id/progressBarBattery3" />
+
+    <ProgressBar
+        android:id="@+id/progressBarBattery5"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="60dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTintMode="src_over"
+        android:max="100"
+        android:min="0"
+        android:progress="0"
+        android:progressBackgroundTint="@color/darkBorder"
+        android:progressTint="@color/percentUnder100"
+        android:scaleY="2"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBarBattery3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/progressBarBattery3" />
+
+    <LinearLayout
+        android:id="@+id/layoutCells"
+        android:layout_width="356dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/imageViewBattery"
+        app:layout_constraintEnd_toEndOf="@+id/progressBarBattery5"
+        app:layout_constraintStart_toStartOf="@+id/progressBarBattery1"
+        app:layout_constraintTop_toBottomOf="@+id/labelCells"></LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

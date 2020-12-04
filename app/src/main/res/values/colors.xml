@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#FFAD78</color>
+    <color name="primaryLightRed">#FF8484</color>
+    <color name="primaryLightYellow">#FFEC85</color>
+    <color name="primaryLightGreen">#DDFF8C</color>
+
+    <color name="batteryChargeHigh">#93FF4E</color>
+    <color name="batteryChargeMedium">#AEFF7A</color>
+    <color name="batteryChargeLow">#C8FFA5</color>
+    <color name="batteryDischargeHighest">#FF7E25</color>
+    <color name="batteryDischargeHigh">#FF9C58</color>
+    <color name="batteryDischargeMedium">#FFB684</color>
+    <color name="batteryDischargeLow">#FFCFAE</color>
+
+    <color name="darkBackground">#FF141414</color>
+    <color name="darkBackgroundVariant">#FF212121</color>
+    <color name="darkBorder">#FF969696</color>
+
+    <color name="percentUnder20">#FFA8A8</color>
+    <color name="percentUnder40">#FFC79C</color>
+    <color name="percentUnder70">#FFFEAD</color>
+    <color name="percentUnder100">#E2FFA0</color>
+
+    <color name="temperatureColdest">#7AA6FF</color>
+    <color name="temperatureColder">#7DFBFF</color>
+    <color name="temperatureCold">#BFFAFF</color>
+    <color name="temperatureNeutral">#FFFFFF</color>
+    <color name="temperatureHot">#FFCDAD</color>
+    <color name="temperatureHotter">#FFB187</color>
+    <color name="temperatureHottest">#FF7C7C</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

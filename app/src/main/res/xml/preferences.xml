@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:key="ble_category"
+        app:title="Bluetooth Low Energy">
+
+        <EditTextPreference
+            app:icon="@drawable/ic_bluetooth"
+            app:key="macAddress"
+            app:title="@string/settingsBluetoothMac"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="general_category"
+        app:title="General">
+
+        <EditTextPreference
+            android:inputType="number"
+            app:icon="@drawable/ic_refresh"
+            app:key="refreshInterval"
+            app:title="@string/settingsRefreshInterval"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="1000" />
+
+        <EditTextPreference
+            android:inputType="number"
+            app:icon="@drawable/ic_time"
+            app:key="smoothingMinutes"
+            app:title="@string/settingsSmoothingMinutes"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="5" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="battery_category"
+        app:title="Battery">
+
+        <EditTextPreference
+            android:inputType="number"
+            app:icon="@drawable/ic_bolt"
+            app:key="minCellVoltage"
+            app:title="@string/settingsMinCellVoltage"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="3000" />
+
+        <EditTextPreference
+            android:inputType="number"
+            app:icon="@drawable/ic_bolt"
+            app:key="maxCellVoltage"
+            app:title="@string/settingsMaxCellVoltage"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="4200" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

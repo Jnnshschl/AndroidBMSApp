@@ -1,0 +1,5 @@
+<resources>
+    <style name="Widget.Theme.BMSMonitor.MyView" parent="">
+        <item name="android:background">@color/darkBackground</item>
+    </style>
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/batteryFragment">
+    <fragment
+        android:id="@+id/batteryFragment"
+        android:name="de.jnns.bmsmonitor.BatteryFragment"
+        android:label="fragment_battery"
+        tools:layout="@layout/fragment_battery">
+        <action
+            android:id="@+id/action_batteryFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="de.jnns.bmsmonitor.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_batteryFragment"
+            app:destination="@id/batteryFragment" />
+    </fragment>
+</navigation>
