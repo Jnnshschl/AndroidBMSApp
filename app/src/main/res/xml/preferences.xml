@@ -12,6 +12,13 @@
             app:title="@string/settingsBluetoothMac"
             app:useSimpleSummaryProvider="true" />
 
+        <EditTextPreference
+            app:icon="@drawable/ic_key"
+            app:key="blePin"
+            app:title="@string/settingsBluetoothPin"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="000000" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

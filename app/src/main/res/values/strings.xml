@@ -31,6 +31,7 @@
     <string name="unitDisplayCelsius">°C</string>
 
     <string name="settingsBluetoothMac">BMS MAC Address</string>
+    <string name="settingsBluetoothPin">BMS Bluetooth Pin</string>
     <string name="settingsSmoothingMinutes">Smoothing Minutes</string>
     <string name="settingsRefreshInterval">Refresh Interval (ms)</string>
 

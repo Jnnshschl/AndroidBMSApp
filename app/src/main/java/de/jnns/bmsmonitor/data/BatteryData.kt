@@ -26,7 +26,7 @@ class BatteryData {
 
     val maxTemperature: Float
         get() {
-            return temperatures.max()!!
+            return temperatures.maxOrNull()!!
         }
 
     val percentage: Float

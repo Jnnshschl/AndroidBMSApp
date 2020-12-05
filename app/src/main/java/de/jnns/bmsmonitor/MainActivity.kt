@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import kotlinx.android.synthetic.main.activity_main.*
 
+@ExperimentalUnsignedTypes
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,16 +34,11 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 4711)
         } else {
-            Intent(this, BmsService::class.java).also { intent ->
-                startService(intent)
-            }
+            Intent(this, BmsService::class.java).also { intent -> startService(intent) }
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>, grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when (requestCode) {
@@ -52,8 +48,6 @@ class MainActivity : AppCompatActivity() {
                         startService(intent)
                     }
                 }
-
-                return
             }
         }
     }

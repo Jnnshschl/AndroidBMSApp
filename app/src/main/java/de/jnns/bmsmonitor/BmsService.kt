@@ -47,6 +47,7 @@ class BmsService : Service() {
 
     // bluetooth device mac to use
     private lateinit var bleMac: String
+    private lateinit var blePin: String
     private lateinit var bleName: String
 
     // no need to refresh data in the background
@@ -56,9 +57,8 @@ class BmsService : Service() {
     private var batteryData = BatteryData()
 
     override fun onCreate() {
-        Log.i("DEBUG", "BMS Service onCreate")
-
         bleMac = PreferenceManager.getDefaultSharedPreferences(this).getString("macAddress", "")!!
+        blePin = PreferenceManager.getDefaultSharedPreferences(this).getString("blePin", "")!!
         dataPollDelay = PreferenceManager.getDefaultSharedPreferences(this).getString("refreshInterval", "1000")!!.toLong() / 2
 
         // bluetooth uart callbacks
@@ -160,7 +160,7 @@ class BmsService : Service() {
         currentBleDevice = dev
         bluetoothLeScanner.stopScan(leScanCallback)
 
-        dev.setPin("000000".toByteArray())
+        dev.setPin(blePin.toByteArray())
         dev.createBond()
 
         connectToDevice()
