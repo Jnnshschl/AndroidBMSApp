@@ -29,6 +29,7 @@ class BmsGattClientCallback(
     private val bufferSize: Int = 80
     private var uartBuffer = ByteArray(bufferSize)
     private var uartBufferPos: Int = 0
+    private var uartBytesLeft: Int = 0
 
     private var isInFrame = false
 
@@ -86,13 +87,26 @@ class BmsGattClientCallback(
         for (byte: Byte in characteristic.value) {
             uartBuffer[uartBufferPos] = byte
 
+            if (uartBufferPos >= bufferSize) {
+                isInFrame = false
+                uartBufferPos = 0
+                uartBytesLeft = 0
+            }
+
             if (isInFrame) {
-                if (byte.toUByte() == 0x77.toUByte()) {
+                if (uartBufferPos == 3) {
+                    uartBytesLeft = byte.toInt()
+                }
+
+                if (byte.toUByte() == 0x77.toUByte() && uartBytesLeft < 1) {
                     isInFrame = false
                     onFrameComplete(uartBufferPos)
                     uartBufferPos = 0
+                    uartBytesLeft = 0
                 } else {
+
                     uartBufferPos++
+                    uartBytesLeft--
                 }
             } else if (byte.toUByte() == 0xDD.toUByte()) {
                 isInFrame = true

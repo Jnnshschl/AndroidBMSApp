@@ -1,12 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.BMSMonitor" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="android:statusBarColor" tools:targetApi="l">@color/darkBackground</item>
-        <item name="android:navigationBarColor" tools:targetApi="l">@color/darkBackground</item>
+    <style name="Theme.BMSMonitor" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor" tools:targetApi="l">@color/bgBase</item>
+        <item name="android:navigationBarColor" tools:targetApi="l">@color/bgBase</item>
         <item name="fontFamily">@font/aldrich</item>
 
         <item name="colorAccent">@color/primary</item>
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/darkBackgroundVariant</item>
-        <item name="colorOnPrimary">@color/darkBackground</item>
+        <item name="colorPrimaryVariant">@color/bgBase1</item>
+        <item name="colorOnPrimary">@color/bgBase</item>
     </style>
 </resources>

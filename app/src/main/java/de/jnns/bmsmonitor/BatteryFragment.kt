@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -88,8 +89,8 @@ class BatteryFragment : Fragment() {
             Section(0.88888888f, 1.00000000f, ContextCompat.getColor(requireContext(), R.color.batteryDischargeHighest), 72.0f)
         )
 
-        speedViewPower.speedTextTypeface = resources.getFont(R.font.aldrich)
-        speedViewPower.textTypeface = resources.getFont(R.font.aldrich)
+        speedViewPower.minSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minPower", "-500")!!.toFloat()
+        speedViewPower.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxPower", "1000")!!.toFloat()
 
         minCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minCellVoltage", "1000")!!.toInt()
         maxCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxCellVoltage", "1000")!!.toInt()
@@ -121,7 +122,15 @@ class BatteryFragment : Fragment() {
             }
 
             // Power Gauge
-            speedViewPower.speedTo(batteryData.power * -1.0f, 1000)
+            val powerUsage = batteryData.power * -1.0f
+
+            speedViewPower.speedTo(powerUsage, 1000)
+
+            if (powerUsage < 0.0f) {
+                labelPower.text = "+${powerUsage.roundToInt() * -1}"
+            } else {
+                labelPower.text = powerUsage.roundToInt().toString()
+            }
 
             // Remaining Time
             wattValues[smoothIndex] = batteryData.power
@@ -177,11 +186,11 @@ class BatteryFragment : Fragment() {
             uiBatteryCapacityBar(totalPercentage)
 
             // Row 2
-            labelCurrent.text = String.format(Locale.US, "%.2f", roundTo(batteryData.current, 2))
+            labelCurrent.text = String.format(Locale.US, "%.1f", roundTo(batteryData.current, 1))
             uiColorEnergyTextView(batteryData.current, labelCurrent)
 
-            labelPower.text = batteryData.watthours.roundToInt().toString()
-            uiColorCapacityTextView(totalPercentage, labelPower)
+            labelCapacityWh.text = batteryData.watthours.roundToInt().toString()
+            uiColorCapacityTextView(totalPercentage, labelCapacityWh)
 
             // Row 3
             labelTemperature.text = roundTo(batteryData.avgTemperature, 1).toString()
@@ -200,11 +209,16 @@ class BatteryFragment : Fragment() {
             val progressBar = ProgressBar(requireContext(), null, android.R.attr.progressBarStyleHorizontal)
 
             progressBar.scaleY = 2.0f
-            progressBar.scaleX = 1.8f
+            progressBar.scaleX = 1.0f
             progressBar.rotation = 270.0f
             progressBar.min = 0
             progressBar.max = maxCellVoltage - minCellVoltage
-            progressBar.layoutParams = ViewGroup.LayoutParams(layoutCells.width / cellCount, 20)
+
+            val layoutParams = LinearLayout.LayoutParams(layoutCells.width / cellCount, 20)
+            layoutParams.setMargins(0, 0, 0, 0)
+            progressBar.setPadding(0, 0, 0, 0)
+
+            progressBar.layoutParams = layoutParams
 
             cellBars.add(progressBar)
             layoutCells.addView(cellBars[i])

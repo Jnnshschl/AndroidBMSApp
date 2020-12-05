@@ -34,6 +34,22 @@
             app:useSimpleSummaryProvider="true"
             app:defaultValue="5" />
 
+        <EditTextPreference
+            android:inputType="number"
+            app:icon="@drawable/ic_energy"
+            app:key="minPower"
+            app:title="@string/settingsMinPower"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="-500" />
+
+        <EditTextPreference
+            android:inputType="number"
+            app:icon="@drawable/ic_energy"
+            app:key="maxPower"
+            app:title="@string/settingsMaxPower"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="1000" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

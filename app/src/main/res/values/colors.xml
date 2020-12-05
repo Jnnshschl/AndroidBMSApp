@@ -13,8 +13,17 @@
     <color name="batteryDischargeMedium">#FFB684</color>
     <color name="batteryDischargeLow">#FFCFAE</color>
 
-    <color name="darkBackground">#FF141414</color>
-    <color name="darkBackgroundVariant">#FF212121</color>
+    <color name="bgBase">#121212</color>
+    <color name="bgBase1">#1e1e1e</color>
+    <color name="bgBase2">#222222</color>
+    <color name="bgBase3">#242424</color>
+    <color name="bgBase4">#272727</color>
+    <color name="bgBase5">#2c2c2c</color>
+    <color name="bgBase6">#2e2e2e</color>
+    <color name="bgBase7">#333333</color>
+    <color name="bgBase8">#343434</color>
+    <color name="bgBase9">#383838</color>
+
     <color name="darkBorder">#FF969696</color>
 
     <color name="percentUnder20">#FFA8A8</color>
@@ -30,6 +39,6 @@
     <color name="temperatureHotter">#FFB187</color>
     <color name="temperatureHottest">#FF7C7C</color>
 
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
 </resources>

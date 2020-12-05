@@ -17,6 +17,7 @@
 
     <string name="threeDotPlaceholder">…</string>
 
+    <string name="zeroZero">0</string>
     <string name="zeroDotZero">0.0</string>
     <string name="zeroClock">00:00</string>
 
@@ -35,4 +36,7 @@
 
     <string name="settingsMinCellVoltage">Min Cell Voltage (mV)</string>
     <string name="settingsMaxCellVoltage">Max Cell Voltage (mV)</string>
+
+    <string name="settingsMinPower">Min Power (W)</string>
+    <string name="settingsMaxPower">Max Power (W)</string>
 </resources>
