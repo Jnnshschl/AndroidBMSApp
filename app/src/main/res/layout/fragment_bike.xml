@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgBase"
+    tools:context=".BikeFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cardGauge"
+        android:layout_width="0dp"
+        android:layout_height="320dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/bgBase"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.github.anastr.speedviewlib.SpeedView
+            android:id="@+id/speedViewSpeed"
+            android:layout_width="416dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="4dp"
+            android:background="@color/bgBase"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:sv_centerCircleColor="@color/bgBase2"
+            app:sv_centerCircleRadius="18dp"
+            app:sv_endDegree="360"
+            app:sv_indicator="NeedleIndicator"
+            app:sv_indicatorColor="@color/white"
+            app:sv_indicatorWidth="16dp"
+            app:sv_markHeight="0px"
+            app:sv_maxSpeed="35"
+            app:sv_minSpeed="0"
+            app:sv_speedTextColor="@color/white"
+            app:sv_speedTextFormat="INTEGER"
+            app:sv_speedTextPadding="0px"
+            app:sv_speedTextPosition="BOTTOM_RIGHT"
+            app:sv_speedTextSize="0sp"
+            app:sv_speedometerMode="NORMAL"
+            app:sv_startDegree="90"
+            app:sv_textColor="@color/white"
+            app:sv_textSize="0px"
+            app:sv_unitTextSize="0px"
+            app:sv_withTremble="false" />
+
+        <TextView
+            android:id="@+id/labelStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/aldrich"
+            android:text="@string/threeDotPlaceholder"
+            android:textColor="@color/darkBorder"
+            android:textSize="12sp"
+            android:typeface="monospace"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelHeader" />
+
+        <TextView
+            android:id="@+id/labelHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="120dp"
+            android:fontFamily="@font/aldrich"
+            android:text="@string/speed"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:typeface="monospace"
+            app:layout_constraintBottom_toBottomOf="@+id/speedViewSpeed"
+            app:layout_constraintEnd_toEndOf="@+id/speedViewSpeed"
+            app:layout_constraintStart_toStartOf="@+id/speedViewSpeed"
+            app:layout_constraintTop_toTopOf="@+id/speedViewSpeed" />
+
+        <TextView
+            android:id="@+id/labelAssistLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/aldrich"
+            android:text="@string/zeroZero"
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            android:typeface="monospace"
+            app:layout_constraintBottom_toTopOf="@+id/labelSpeed"
+            app:layout_constraintEnd_toEndOf="@+id/labelSpeed" />
+
+        <TextView
+            android:id="@+id/labelSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="64dp"
+            android:fontFamily="@font/aldrich"
+            android:text="@string/zeroZero"
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            android:typeface="monospace"
+            app:layout_constraintBottom_toBottomOf="@+id/speedViewSpeed"
+            app:layout_constraintEnd_toEndOf="@+id/speedViewSpeed" />
+
+        <TextView
+            android:id="@+id/labelAssistUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="3dp"
+            android:fontFamily="@font/aldrich"
+            android:text="@string/unitDisplayLevel"
+            android:textColor="@color/darkBorder"
+            android:textSize="24sp"
+            android:typeface="monospace"
+            app:layout_constraintBottom_toBottomOf="@+id/labelAssistLevel"
+            app:layout_constraintStart_toEndOf="@+id/labelAssistLevel" />
+
+        <TextView
+            android:id="@+id/labelPowerUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="3dp"
+            android:fontFamily="@font/aldrich"
+            android:text="@string/unitDisplayKilometersPerHour"
+            android:textColor="@color/darkBorder"
+            android:textSize="24sp"
+            android:typeface="monospace"
+            app:layout_constraintBottom_toBottomOf="@+id/labelSpeed"
+            app:layout_constraintStart_toEndOf="@+id/labelSpeed" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

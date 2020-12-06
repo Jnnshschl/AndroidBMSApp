@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <service android:name=".BmsService" />
+        <service android:name=".BikeService" />
     </application>
 
 </manifest>

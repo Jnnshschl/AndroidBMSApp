@@ -15,10 +15,12 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.github.anastr.speedviewlib.components.Section
 import com.google.gson.Gson
 import de.jnns.bmsmonitor.data.BatteryData
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_battery.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -78,8 +80,24 @@ class BatteryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        speedViewPower.clearSections()
-        speedViewPower.addSections(
+        requireActivity().bottomNavigation.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.page_bike -> {
+                    requireActivity().title = getString(R.string.app_name)
+                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_batteryFragment_to_bikeFragment)
+                    true
+                }
+                R.id.page_settings -> {
+                    requireActivity().title = getString(R.string.appNameSettings)
+                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_batteryFragment_to_settingsFragment)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        speedViewSpeed.clearSections()
+        speedViewSpeed.addSections(
             Section(0.00000000f, 0.11111111f, ContextCompat.getColor(requireContext(), R.color.batteryChargeHigh), 72.0f),
             Section(0.11111111f, 0.22222222f, ContextCompat.getColor(requireContext(), R.color.batteryChargeMedium), 72.0f),
             Section(0.22222222f, 0.33333333f, ContextCompat.getColor(requireContext(), R.color.batteryChargeLow), 72.0f),
@@ -89,8 +107,8 @@ class BatteryFragment : Fragment() {
             Section(0.88888888f, 1.00000000f, ContextCompat.getColor(requireContext(), R.color.batteryDischargeHighest), 72.0f)
         )
 
-        speedViewPower.minSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minPower", "-500")!!.toFloat()
-        speedViewPower.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxPower", "1000")!!.toFloat()
+        speedViewSpeed.minSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minPower", "-500")!!.toFloat()
+        speedViewSpeed.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxPower", "1000")!!.toFloat()
 
         minCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minCellVoltage", "1000")!!.toInt()
         maxCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxCellVoltage", "1000")!!.toInt()
@@ -102,7 +120,7 @@ class BatteryFragment : Fragment() {
         isInForeground = true
         cellBarsInitialized = false
 
-        speedViewPower.speedTo(0.0f, 0)
+        speedViewSpeed.speedTo(0.0f, 0)
         labelStatus.text = getString(R.string.waitForBms)
     }
 
@@ -124,7 +142,7 @@ class BatteryFragment : Fragment() {
             // Power Gauge
             val powerUsage = batteryData.power * -1.0f
 
-            speedViewPower.speedTo(powerUsage, 1000)
+            speedViewSpeed.speedTo(powerUsage, 1000)
 
             if (powerUsage < 0.0f) {
                 labelPower.text = "+${powerUsage.roundToInt() * -1}"

@@ -6,6 +6,11 @@
         android:icon="@drawable/ic_battery"
         android:title="@string/navBattery"/>
     <item
+        android:id="@+id/page_bike"
+        android:enabled="true"
+        android:icon="@drawable/ic_bike"
+        android:title="@string/navBike"/>
+    <item
         android:id="@+id/page_settings"
         android:enabled="true"
         android:icon="@drawable/ic_settings"

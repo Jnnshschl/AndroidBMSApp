@@ -6,6 +6,12 @@
         app:key="ble_category"
         app:title="Bluetooth Low Energy">
 
+        <CheckBoxPreference
+            app:icon="@drawable/ic_battery"
+            app:key="batteryEnabled"
+            app:title="@string/settingsBatteryEnabled"
+            app:useSimpleSummaryProvider="true" />
+
         <EditTextPreference
             app:icon="@drawable/ic_bluetooth"
             app:key="macAddress"
@@ -13,49 +19,68 @@
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
+            app:defaultValue="000000"
             app:icon="@drawable/ic_key"
             app:key="blePin"
             app:title="@string/settingsBluetoothPin"
-            app:useSimpleSummaryProvider="true"
-            app:defaultValue="000000" />
+            app:useSimpleSummaryProvider="true" />
+
+        <CheckBoxPreference
+            app:icon="@drawable/ic_bike"
+            app:key="bikeEnabled"
+            app:title="@string/settingsBikeEnabled"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:icon="@drawable/ic_bluetooth"
+            app:key="macAddressBike"
+            app:title="@string/settingsBluetoothMacBike"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:defaultValue="000000"
+            app:icon="@drawable/ic_key"
+            app:key="blePinBike"
+            app:title="@string/settingsBluetoothPinBike"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         app:key="general_category"
-        app:title="General">
+        app:title="BMS">
 
         <EditTextPreference
             android:inputType="number"
+            app:defaultValue="1000"
             app:icon="@drawable/ic_refresh"
             app:key="refreshInterval"
             app:title="@string/settingsRefreshInterval"
-            app:useSimpleSummaryProvider="true"
-            app:defaultValue="1000" />
+            app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:inputType="number"
+            app:defaultValue="5"
             app:icon="@drawable/ic_time"
             app:key="smoothingMinutes"
             app:title="@string/settingsSmoothingMinutes"
-            app:useSimpleSummaryProvider="true"
-            app:defaultValue="5" />
+            app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:inputType="number"
+            app:defaultValue="-500"
             app:icon="@drawable/ic_energy"
             app:key="minPower"
             app:title="@string/settingsMinPower"
-            app:useSimpleSummaryProvider="true"
-            app:defaultValue="-500" />
+            app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:inputType="number"
+            app:defaultValue="1000"
             app:icon="@drawable/ic_energy"
             app:key="maxPower"
             app:title="@string/settingsMaxPower"
-            app:useSimpleSummaryProvider="true"
-            app:defaultValue="1000" />
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
@@ -65,19 +90,33 @@
 
         <EditTextPreference
             android:inputType="number"
+            app:defaultValue="3000"
             app:icon="@drawable/ic_bolt"
             app:key="minCellVoltage"
             app:title="@string/settingsMinCellVoltage"
-            app:useSimpleSummaryProvider="true"
-            app:defaultValue="3000" />
+            app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             android:inputType="number"
+            app:defaultValue="4200"
             app:icon="@drawable/ic_bolt"
             app:key="maxCellVoltage"
             app:title="@string/settingsMaxCellVoltage"
-            app:useSimpleSummaryProvider="true"
-            app:defaultValue="4200" />
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="bike_category"
+        app:title="Bike">
+
+        <EditTextPreference
+            android:inputType="number"
+            app:defaultValue="35"
+            app:icon="@drawable/ic_speed"
+            app:key="maxSpeed"
+            app:title="@string/settingsMaxSpeed"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

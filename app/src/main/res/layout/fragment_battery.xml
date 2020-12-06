@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.github.anastr.speedviewlib.SpeedView
-            android:id="@+id/speedViewPower"
+            android:id="@+id/speedViewSpeed"
             android:layout_width="416dp"
             android:layout_height="0dp"
             android:layout_marginBottom="4dp"
@@ -74,10 +74,10 @@
             android:textColor="@color/white"
             android:textSize="24sp"
             android:typeface="monospace"
-            app:layout_constraintBottom_toBottomOf="@+id/speedViewPower"
-            app:layout_constraintEnd_toEndOf="@+id/speedViewPower"
-            app:layout_constraintStart_toStartOf="@+id/speedViewPower"
-            app:layout_constraintTop_toTopOf="@+id/speedViewPower" />
+            app:layout_constraintBottom_toBottomOf="@+id/speedViewSpeed"
+            app:layout_constraintEnd_toEndOf="@+id/speedViewSpeed"
+            app:layout_constraintStart_toStartOf="@+id/speedViewSpeed"
+            app:layout_constraintTop_toTopOf="@+id/speedViewSpeed" />
 
         <TextView
             android:id="@+id/labelTime"
@@ -101,8 +101,8 @@
             android:textColor="@color/white"
             android:textSize="32sp"
             android:typeface="monospace"
-            app:layout_constraintBottom_toBottomOf="@+id/speedViewPower"
-            app:layout_constraintEnd_toEndOf="@+id/speedViewPower" />
+            app:layout_constraintBottom_toBottomOf="@+id/speedViewSpeed"
+            app:layout_constraintEnd_toEndOf="@+id/speedViewSpeed" />
 
         <TextView
             android:id="@+id/labelTimeUnit"

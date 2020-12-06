@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
+import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 @ExperimentalUnsignedTypes
@@ -15,26 +16,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        bottomNavigation.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.page_battery -> {
-                    title = getString(R.string.app_name)
-                    findNavController(R.id.nav_host_fragment).navigate(R.id.action_settingsFragment_to_batteryFragment)
-                    true
-                }
-                R.id.page_settings -> {
-                    title = getString(R.string.appNameSettings)
-                    findNavController(R.id.nav_host_fragment).navigate(R.id.action_batteryFragment_to_settingsFragment)
-                    true
-                }
-                else -> false
-            }
-        }
+        val batteryEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("batteryEnabled", false)
+        val bikeEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("bikeEnabled", false)
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 4711)
         } else {
-            Intent(this, BmsService::class.java).also { intent -> startService(intent) }
+            if (batteryEnabled) {
+                Intent(this, BmsService::class.java).also { intent -> startService(intent) }
+            }
+
+            if (bikeEnabled) {
+                Intent(this, BikeService::class.java).also { intent -> startService(intent) }
+            }
         }
     }
 

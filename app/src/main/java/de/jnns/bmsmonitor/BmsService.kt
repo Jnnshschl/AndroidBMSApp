@@ -184,7 +184,7 @@ class BmsService : Service() {
             }
 
             if (!leDeviceList.contains(result.device)) {
-                Log.d("BLE", "${result.device.name}: ${result.device.address}")
+                Log.d("BmsService", "${result.device.name}: ${result.device.address}")
 
                 leDeviceList.add(result.device)
 
