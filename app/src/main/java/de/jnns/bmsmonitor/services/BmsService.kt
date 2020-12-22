@@ -1,23 +1,23 @@
-package de.jnns.bmsmonitor
+package de.jnns.bmsmonitor.services
 
 import android.app.Service
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
-import android.bluetooth.le.BluetoothLeScanner
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
 import android.content.Intent
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
+import de.jnns.bmsmonitor.bluetooth.BleManager
 import de.jnns.bmsmonitor.bluetooth.BmsGattClientCallback
 import de.jnns.bmsmonitor.bms.BmsCellInfoResponse
 import de.jnns.bmsmonitor.bms.BmsGeneralInfoResponse
 import de.jnns.bmsmonitor.data.BatteryData
+import io.realm.Realm
+
 
 @ExperimentalUnsignedTypes
 class BmsService : Service() {
@@ -30,9 +30,6 @@ class BmsService : Service() {
     private lateinit var bluetoothGatt: BluetoothGatt
     private lateinit var gattClientCallback: BmsGattClientCallback
     private lateinit var currentBleDevice: BluetoothDevice
-    private lateinit var bluetoothLeScanner: BluetoothLeScanner
-    private lateinit var leDeviceList: ArrayList<BluetoothDevice>
-    private var isScanning = false
 
     // Handler that is going to poll data from the bms
     // it is going to toggle "dataModeSwitch" and
@@ -53,36 +50,38 @@ class BmsService : Service() {
     // no need to refresh data in the background
     private var isInForeground = false
 
+    // is connected
+    private var isConnected = false
+    private var isConnecting = false
+
     // main dataset
     private var batteryData = BatteryData()
 
+    private lateinit var listener: OnSharedPreferenceChangeListener
+
     override fun onCreate() {
+        super.onCreate()
+
         bleMac = PreferenceManager.getDefaultSharedPreferences(this).getString("macAddress", "")!!
         blePin = PreferenceManager.getDefaultSharedPreferences(this).getString("blePin", "")!!
         dataPollDelay = PreferenceManager.getDefaultSharedPreferences(this).getString("refreshInterval", "1000")!!.toLong() / 2
 
-        // bluetooth uart callbacks
-        gattClientCallback = BmsGattClientCallback(
-            ::onGeneralInfoAvailable,   // process general info
-            ::onCellInfoAvailable,      // process cell info
-            ::onConnectionSucceeded,    // on connection succeeded
-            ::connectToDevice           // on connection fails
-        )
-
-        if (bleMac.isNotEmpty()) {
-            //val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-            //val bluetoothAdapter = bluetoothManager.adapter
-
-            // enable bluetooth if needed
-            // if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
-            //     startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 1)
-            // }
-
-            bluetoothLeScanner = BluetoothAdapter.getDefaultAdapter().bluetoothLeScanner
-            leDeviceList = ArrayList()
-
-            startBleScanning()
+        BleManager.i.onUpdateFunctions.add {
+            searchForDeviceAndConnect()
         }
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+
+        listener = OnSharedPreferenceChangeListener { _, key ->
+            if (key == "macAddress") {
+                bleMac = PreferenceManager.getDefaultSharedPreferences(this).getString("macAddress", "")!!
+
+                disconnectFromDevice()
+                searchForDeviceAndConnect()
+            }
+        }
+
+        prefs.registerOnSharedPreferenceChangeListener(listener)
 
         isInForeground = true
     }
@@ -119,14 +118,39 @@ class BmsService : Service() {
             cellInfoReceived = false
             generalInfoReceived = false
 
+            batteryData.timestamp = System.currentTimeMillis()
+            batteryData.bleAddress = currentBleDevice.address
+
+            if (currentBleDevice.name.isNotEmpty()) {
+                batteryData.bleName = currentBleDevice.name
+            } else {
+                batteryData.bleName = "unknown"
+            }
+
+            // save battery history
+            val realm = Realm.getDefaultInstance()
+            realm.beginTransaction()
+            realm.copyToRealm(batteryData)
+            realm.commitTransaction()
+
             val intent = Intent("bmsDataIntent")
-            intent.putExtra("deviceName", bleName)
+            intent.putExtra("deviceName", batteryData.bleName)
             intent.putExtra("batteryData", Gson().toJson(batteryData))
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
         }
     }
 
+    private fun onConnectionFailed() {
+        isConnected = false
+        isConnecting = false
+
+        connectToDevice()
+    }
+
     private fun onConnectionSucceeded() {
+        isConnected = true
+        isConnecting = false
+
         dataHandler.postDelayed(object : Runnable {
             override fun run() {
                 if (gattClientCallback.isConnected) {
@@ -148,51 +172,44 @@ class BmsService : Service() {
         }, dataPollDelay)
     }
 
-    private fun startBleScanning() {
-        if (!isScanning) {
-            isScanning = true
-            bluetoothLeScanner.startScan(leScanCallback)
+    private fun searchForDeviceAndConnect() {
+        val bleDevice = BleManager.i.bleDevices.firstOrNull { x -> x.address.equals(bleMac, ignoreCase = true) }
+
+        if (bleDevice != null) {
+            currentBleDevice = bleDevice
+            connectToDevice()
         }
     }
 
-    private fun stopBleScanning(dev: BluetoothDevice) {
-        isScanning = false
-        currentBleDevice = dev
-        bluetoothLeScanner.stopScan(leScanCallback)
+    private fun connectToDevice() {
+        if (!isConnected && !isConnecting) {
+            isConnecting = true
 
-        dev.setPin(blePin.toByteArray())
-        dev.createBond()
+            // bluetooth uart callbacks
+            gattClientCallback = BmsGattClientCallback(
+                ::onGeneralInfoAvailable,   // process general info
+                ::onCellInfoAvailable,      // process cell info
+                ::onConnectionSucceeded,    // on connection succeeded
+                ::onConnectionFailed        // on connection fails
+            )
 
-        connectToDevice()
+            currentBleDevice.setPin(blePin.toByteArray())
+            currentBleDevice.createBond()
+
+            bluetoothGatt = currentBleDevice.connectGatt(this, false, gattClientCallback)
+        }
     }
 
-    private fun connectToDevice() {
-        bluetoothGatt = currentBleDevice.connectGatt(this, false, gattClientCallback)
+    private fun disconnectFromDevice() {
+        if (isConnected) {
+            bluetoothGatt.close()
+
+            isConnected = false
+        }
     }
 
     private fun writeBytes(bytes: ByteArray) {
         gattClientCallback.writeCharacteristic.value = bytes
         bluetoothGatt.writeCharacteristic(gattClientCallback.writeCharacteristic)
-    }
-
-    private val leScanCallback: ScanCallback = object : ScanCallback() {
-        override fun onScanResult(callbackType: Int, result: ScanResult) {
-            super.onScanResult(callbackType, result)
-
-            if (!isInForeground) {
-                return
-            }
-
-            if (!leDeviceList.contains(result.device)) {
-                Log.d("BmsService", "${result.device.name}: ${result.device.address}")
-
-                leDeviceList.add(result.device)
-
-                if (result.device.address.equals(bleMac, ignoreCase = true)) {
-                    stopBleScanning(result.device)
-                    bleName = result.device.name
-                }
-            }
-        }
     }
 }

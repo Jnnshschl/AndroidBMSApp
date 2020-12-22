@@ -11,6 +11,11 @@
         android:icon="@drawable/ic_bike"
         android:title="@string/navBike"/>
     <item
+        android:id="@+id/page_stats"
+        android:enabled="true"
+        android:icon="@drawable/ic_stats"
+        android:title="@string/navStats"/>
+    <item
         android:id="@+id/page_settings"
         android:enabled="true"
         android:icon="@drawable/ic_settings"

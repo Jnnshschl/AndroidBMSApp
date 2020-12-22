@@ -1,5 +1,9 @@
 package de.jnns.bmsmonitor.bms
 
+import io.realm.RealmList
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+
 class BmsGeneralInfoResponse(bytes: ByteArray) {
     var command: Int = 0
     var status: Int = 0
@@ -10,24 +14,22 @@ class BmsGeneralInfoResponse(bytes: ByteArray) {
     var capacity: Float = 0.0f
     var nominalCapacity: Float = 0.0f
     var temperatureProbeCount: Int = 0
-    var temperatureProbeValues: FloatArray
-    var cycles: Int = 0
+    var temperatureProbeValues: RealmList<Float>
+    var cycles: Short = 0
 
     init {
         command = bytes[1].toInt()
         status = bytes[2].toInt()
         dataLength = bytes[3].toInt()
-        totalVoltage = (bytes[4].toInt() and 0xFF shl 8 or (bytes[5].toInt() and 0xFF)).toFloat() / 100.0f
-        totalCurrent = (bytes[6].toInt() and 0xFF shl 8 or (bytes[7].toInt() and 0xFF)).toFloat() / 100.0f
+
+        totalVoltage = bytesToShort(bytes[4], bytes[5]) / 100.0f
 
         // discharging
-        if (bytes[6].toInt() == -1) {
-            totalCurrent -= 655.360f
-        }
+        totalCurrent = bytesToShort(bytes[6], bytes[7]) / 100.0f
 
-        residualCapacity = (bytes[8].toInt() and 0xFF shl 8 or (bytes[9].toInt() and 0xFF)).toFloat() / 100.0f
-        nominalCapacity = (bytes[10].toInt() and 0xFF shl 8 or (bytes[11].toInt() and 0xFF)).toFloat() / 100.0f
-        cycles = bytes[12].toInt() and 0xFF shl 8 or (bytes[13].toInt() and 0xFF)
+        residualCapacity = bytesToShort(bytes[8], bytes[9]) / 100.0f
+        nominalCapacity = bytesToShort(bytes[10], bytes[11]) / 100.0f
+        cycles = bytesToShort(bytes[12], bytes[13])
 
         // 14 & 15 = production date
         // 16 & 17 = balance low
@@ -41,10 +43,21 @@ class BmsGeneralInfoResponse(bytes: ByteArray) {
         // 25 = number of cells
 
         temperatureProbeCount = bytes[26].toInt()
-        temperatureProbeValues = FloatArray(temperatureProbeCount)
+        temperatureProbeValues = RealmList<Float>()
 
         for (i in 0 until temperatureProbeCount) {
-            temperatureProbeValues[i] = ((bytes[27 + (i * 2)].toInt() and 0xFF shl 8 or (bytes[27 + (i * 2) + 1].toInt() and 0xFF)) - 2731) / 10.0f
+            temperatureProbeValues.add((bytesToShort(bytes[27 + (i * 2)], bytes[27 + (i * 2) + 1]) - 2731) / 10.0f)
         }
+    }
+
+    private fun bytesToShort(h: Byte, l: Byte, order: ByteOrder = ByteOrder.BIG_ENDIAN): Short {
+        val byteBuffer: ByteBuffer = ByteBuffer.allocateDirect(2)
+
+        byteBuffer.order(order)
+        byteBuffer.put(h)
+        byteBuffer.put(l)
+        byteBuffer.flip()
+
+        return byteBuffer.short
     }
 }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">BMS Monitor</string>
     <string name="appNameSettings">BMS Monitor - Settings</string>
+    <string name="appNameStats">BMS Monitor - Stats</string>
 
     <string name="waitForBms">Waiting for BMS…</string>
     <string name="connectedToBms">BMS: %1$s</string>
@@ -14,6 +15,7 @@
     <string name="navBattery">Battery</string>
     <string name="navBike">Bike</string>
     <string name="navSettings">Settings</string>
+    <string name="navStats">Stats</string>
 
     <string name="imageBattery">Battery</string>
     <string name="imageTemperature">Temperature</string>

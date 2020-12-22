@@ -12,7 +12,7 @@
             app:title="@string/settingsBatteryEnabled"
             app:useSimpleSummaryProvider="true" />
 
-        <EditTextPreference
+        <ListPreference
             app:icon="@drawable/ic_bluetooth"
             app:key="macAddress"
             app:title="@string/settingsBluetoothMac"

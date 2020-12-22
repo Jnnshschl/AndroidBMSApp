@@ -239,17 +239,18 @@
                 app:layout_constraintStart_toEndOf="@+id/progressBarBattery4"
                 app:layout_constraintTop_toTopOf="@+id/progressBarBattery3" />
 
-            <LinearLayout
-                android:id="@+id/layoutCells"
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/barchartCells"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginBottom="8dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:orientation="horizontal"
+                android:padding="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/progressBarBattery5"
-                app:layout_constraintStart_toStartOf="@+id/progressBarBattery1"
-                app:layout_constraintTop_toBottomOf="@+id/labelCells" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progressBarBattery3" />
 
             <TextView
                 android:id="@+id/labelCapacity"
@@ -264,18 +265,6 @@
                 app:layout_constraintStart_toStartOf="@+id/progressBarBattery1"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/labelCells"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/aldrich"
-                android:text="@string/cells"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:typeface="monospace"
-                app:layout_constraintStart_toStartOf="@+id/progressBarBattery1"
-                app:layout_constraintTop_toBottomOf="@+id/progressBarBattery3" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 

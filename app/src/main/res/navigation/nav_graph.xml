@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_batteryFragment_to_bikeFragment"
             app:destination="@id/bikeFragment" />
+        <action
+            android:id="@+id/action_batteryFragment_to_statsFragment"
+            app:destination="@id/statsFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -27,6 +30,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_bikeFragment"
             app:destination="@id/bikeFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_statsFragment"
+            app:destination="@id/statsFragment" />
     </fragment>
     <fragment
         android:id="@+id/bikeFragment"
@@ -39,5 +45,23 @@
         <action
             android:id="@+id/action_bikeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_bikeFragment_to_statsFragment"
+            app:destination="@id/statsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="de.jnns.bmsmonitor.StatsFragment"
+        android:label="fragment_stats"
+        tools:layout="@layout/fragment_stats" >
+        <action
+            android:id="@+id/action_statsFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_statsFragment_to_bikeFragment"
+            app:destination="@id/bikeFragment" />
+        <action
+            android:id="@+id/action_statsFragment_to_batteryFragment"
+            app:destination="@id/batteryFragment" />
     </fragment>
 </navigation>

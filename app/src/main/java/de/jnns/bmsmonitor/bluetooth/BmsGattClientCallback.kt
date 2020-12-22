@@ -33,32 +33,25 @@ class BmsGattClientCallback(
 
     private var isInFrame = false
 
-    override fun onConnectionStateChange(
-        gatt: BluetoothGatt,
-        status: Int,
-        newState: Int
-    ) {
+    override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
         super.onConnectionStateChange(gatt, status, newState)
 
         if (status != BluetoothGatt.GATT_SUCCESS) {
-            Log.i("GATT", "Connection failed")
+            Log.d("BluetoothGatt", "connection failed")
             onConnectionFailed()
             isConnected = false
             return
         }
 
         if (newState == BluetoothProfile.STATE_CONNECTED) {
-            Log.i("GATT", "Connected")
             gatt.discoverServices()
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-            Log.i("GATT", "Disconnected")
             isConnected = false
         }
     }
 
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
         super.onServicesDiscovered(gatt, status)
-        Log.i("GATT", "onServicesDiscovered status: $status")
 
         if (status != BluetoothGatt.GATT_SUCCESS) {
             return
@@ -66,32 +59,31 @@ class BmsGattClientCallback(
 
         val uartService = gatt.getService(uartUuid)
 
-        readCharacteristic = uartService.getCharacteristic(rxUuid)
-        writeCharacteristic = uartService.getCharacteristic(txUuid)
+        if (uartService != null) {
+            readCharacteristic = uartService.getCharacteristic(rxUuid)
+            writeCharacteristic = uartService.getCharacteristic(txUuid)
 
-        gatt.setCharacteristicNotification(writeCharacteristic, true)
-        gatt.setCharacteristicNotification(readCharacteristic, true)
+            gatt.setCharacteristicNotification(writeCharacteristic, true)
+            gatt.setCharacteristicNotification(readCharacteristic, true)
 
-        onConnectionSucceeded()
-        isConnected = true
+            onConnectionSucceeded()
+            isConnected = true
+        }
     }
 
-    override fun onCharacteristicChanged(
-        gatt: BluetoothGatt,
-        characteristic: BluetoothGattCharacteristic
-    ) {
+    override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
         super.onCharacteristicChanged(gatt, characteristic)
 
-        // Log.i("GATT", "BLE Data (" + characteristic.value.size + "): " + characteristic.value.toHexString())
+        // Log.d("BluetoothGatt", "BLE Data (" + characteristic.value.size + "): " + characteristic.value.toHexString())
 
         for (byte: Byte in characteristic.value) {
-            uartBuffer[uartBufferPos] = byte
-
             if (uartBufferPos >= bufferSize) {
                 isInFrame = false
                 uartBufferPos = 0
                 uartBytesLeft = 0
             }
+
+            uartBuffer[uartBufferPos] = byte
 
             if (isInFrame) {
                 if (uartBufferPos == 3) {
@@ -116,9 +108,13 @@ class BmsGattClientCallback(
     }
 
     private fun onFrameComplete(size: Int) {
+        if (size <= 0) {
+            return
+        }
+
         val frameBytes = uartBuffer.slice(IntRange(0, size)).toByteArray()
 
-        // Log.i("GATT", "FrameData (" + frameBytes.size + "): " + frameBytes.toHexString())
+        // Log.d("BluetoothGatt", "FrameData (" + frameBytes.size + "): " + frameBytes.toHexString())
 
         if (frameBytes[1] == 0x3.toByte()) {
             val generalInfo = BmsGeneralInfoResponse(frameBytes)

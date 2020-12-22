@@ -7,14 +7,13 @@ import android.bluetooth.BluetoothProfile
 import android.util.Log
 import de.jnns.bmsmonitor.bike.LcdToMcuResponse
 import de.jnns.bmsmonitor.bike.McuToLcdResponse
-import de.jnns.bmsmonitor.bms.BmsCellInfoResponse
-import de.jnns.bmsmonitor.bms.BmsGeneralInfoResponse
 import java.util.*
 
 @ExperimentalUnsignedTypes
 class BikeGattClientCallback(
     val onLcdToMcuDataAvailable: (data: LcdToMcuResponse) -> Unit,
     val onMcuToLcdDataAvailable: (data: McuToLcdResponse) -> Unit,
+    val onConnectionSucceeded: () -> Unit,
     val onConnectionFailed: () -> Unit
 ) :
     BluetoothGattCallback() {
@@ -27,32 +26,25 @@ class BikeGattClientCallback(
     private val lcdToMcuUuid = UUID.fromString("e756a872-cf61-4e8a-bfe7-68868ce56092")
     private val mcuToLcdUuid = UUID.fromString("82538842-376d-457b-9789-bd0f93c347ed")
 
-    override fun onConnectionStateChange(
-        gatt: BluetoothGatt,
-        status: Int,
-        newState: Int
-    ) {
+    override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
         super.onConnectionStateChange(gatt, status, newState)
 
         if (status != BluetoothGatt.GATT_SUCCESS) {
-            Log.i("GATT", "Connection failed")
+            Log.d("BluetoothGatt", "connection failed")
             onConnectionFailed()
             isConnected = false
             return
         }
 
         if (newState == BluetoothProfile.STATE_CONNECTED) {
-            Log.i("GATT", "Connected")
             gatt.discoverServices()
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-            Log.i("GATT", "Disconnected")
             isConnected = false
         }
     }
 
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
         super.onServicesDiscovered(gatt, status)
-        Log.i("GATT", "onServicesDiscovered status: $status")
 
         if (status != BluetoothGatt.GATT_SUCCESS) {
             return
@@ -60,28 +52,28 @@ class BikeGattClientCallback(
 
         val service = gatt.getService(serviceUuid)
 
-        lcdToMcuCharacteristic = service.getCharacteristic(lcdToMcuUuid)
-        mcuToLcdCharacteristic = service.getCharacteristic(mcuToLcdUuid)
+        if (service != null) {
+            lcdToMcuCharacteristic = service.getCharacteristic(lcdToMcuUuid)
+            mcuToLcdCharacteristic = service.getCharacteristic(mcuToLcdUuid)
 
-        gatt.setCharacteristicNotification(lcdToMcuCharacteristic, true)
-        gatt.setCharacteristicNotification(mcuToLcdCharacteristic, true)
+            gatt.setCharacteristicNotification(lcdToMcuCharacteristic, true)
+            gatt.setCharacteristicNotification(mcuToLcdCharacteristic, true)
 
-        isConnected = true
+            onConnectionSucceeded()
+            isConnected = true
+        }
     }
 
-    override fun onCharacteristicChanged(
-        gatt: BluetoothGatt,
-        characteristic: BluetoothGattCharacteristic
-    ) {
+    override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
         super.onCharacteristicChanged(gatt, characteristic)
 
         if (characteristic.uuid == lcdToMcuUuid) {
-            // Log.i("GATT", "FrameData (LCD): " + characteristic.value.toHexString())
+            // Log.d("BluetoothGatt", "FrameData (LCD): " + characteristic.value.toHexString())
 
             val data = LcdToMcuResponse(characteristic.value)
             onLcdToMcuDataAvailable(data)
         } else if (characteristic.uuid == mcuToLcdUuid) {
-            // Log.i("GATT", "FrameData (MCU): " + characteristic.value.toHexString())
+            // Log.d("BluetoothGatt", "FrameData (MCU): " + characteristic.value.toHexString())
 
             val data = McuToLcdResponse(characteristic.value)
             onMcuToLcdDataAvailable(data)

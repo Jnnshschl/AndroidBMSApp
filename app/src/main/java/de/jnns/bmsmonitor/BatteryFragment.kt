@@ -5,11 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -18,18 +18,28 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.github.anastr.speedviewlib.components.Section
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.formatter.DefaultValueFormatter
+import com.github.mikephil.charting.formatter.IValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.utils.ColorTemplate
+import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.gson.Gson
 import de.jnns.bmsmonitor.data.BatteryData
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_battery.*
+import de.jnns.bmsmonitor.databinding.FragmentBatteryBinding
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
 @ExperimentalUnsignedTypes
 class BatteryFragment : Fragment() {
+    private var _binding: FragmentBatteryBinding? = null
+    private val binding get() = _binding!!
+
     // no need to refresh data in the background
     private var isInForeground = false
 
@@ -51,9 +61,7 @@ class BatteryFragment : Fragment() {
             try {
                 val msg: String = intent.getStringExtra("batteryData")
 
-                if (labelStatus != null) {
-                    labelStatus.text = String.format(resources.getString(R.string.connectedToBms), intent.getStringExtra("deviceName"))
-                }
+                binding.labelStatus.text = String.format(resources.getString(R.string.connectedToBms), intent.getStringExtra("deviceName"))
 
                 if (msg.isNotEmpty()) {
                     updateUi(Gson().fromJson(msg, BatteryData::class.java))
@@ -65,22 +73,25 @@ class BatteryFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver, IntentFilter("bmsDataIntent"))
-        return inflater.inflate(R.layout.fragment_battery, container, false)
+        _binding = FragmentBatteryBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        _binding = null
         LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(mMessageReceiver)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().bottomNavigation.setOnNavigationItemSelectedListener { item ->
+        (requireActivity() as MainActivity).binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.page_bike -> {
                     requireActivity().title = getString(R.string.app_name)
@@ -92,12 +103,17 @@ class BatteryFragment : Fragment() {
                     requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_batteryFragment_to_settingsFragment)
                     true
                 }
+                R.id.page_stats -> {
+                    requireActivity().title = getString(R.string.appNameStats)
+                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_batteryFragment_to_statsFragment)
+                    true
+                }
                 else -> false
             }
         }
 
-        speedViewSpeed.clearSections()
-        speedViewSpeed.addSections(
+        binding.speedViewSpeed.clearSections()
+        binding.speedViewSpeed.addSections(
             Section(0.00000000f, 0.11111111f, ContextCompat.getColor(requireContext(), R.color.batteryChargeHigh), 72.0f),
             Section(0.11111111f, 0.22222222f, ContextCompat.getColor(requireContext(), R.color.batteryChargeMedium), 72.0f),
             Section(0.22222222f, 0.33333333f, ContextCompat.getColor(requireContext(), R.color.batteryChargeLow), 72.0f),
@@ -107,11 +123,37 @@ class BatteryFragment : Fragment() {
             Section(0.88888888f, 1.00000000f, ContextCompat.getColor(requireContext(), R.color.batteryDischargeHighest), 72.0f)
         )
 
-        speedViewSpeed.minSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minPower", "-500")!!.toFloat()
-        speedViewSpeed.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxPower", "1000")!!.toFloat()
+        binding.speedViewSpeed.minSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minPower", "-500")!!.toFloat()
+        binding.speedViewSpeed.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxPower", "1000")!!.toFloat()
 
         minCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minCellVoltage", "1000")!!.toInt()
         maxCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxCellVoltage", "1000")!!.toInt()
+
+        binding.barchartCells.setNoDataTextColor(resources.getColor(R.color.white))
+        binding.barchartCells.setNoDataText("...")
+
+        binding.barchartCells.setPinchZoom(false)
+        binding.barchartCells.setTouchEnabled(false)
+        binding.barchartCells.isClickable = false
+        binding.barchartCells.isDoubleTapToZoomEnabled = false
+
+        binding.barchartCells.setDrawBorders(false)
+        binding.barchartCells.setDrawValueAboveBar(true)
+        binding.barchartCells.setDrawBorders(false)
+        binding.barchartCells.setDrawGridBackground(false)
+
+        binding.barchartCells.description.isEnabled = false
+        binding.barchartCells.legend.isEnabled = false
+
+        binding.barchartCells.axisLeft.setDrawGridLines(false)
+        binding.barchartCells.axisLeft.setDrawLabels(false)
+        binding.barchartCells.axisLeft.setDrawAxisLine(false)
+
+        binding.barchartCells.xAxis.setDrawGridLines(false)
+        binding.barchartCells.xAxis.setDrawLabels(false)
+        binding.barchartCells.xAxis.setDrawAxisLine(false)
+
+        binding.barchartCells.axisRight.isEnabled = false
     }
 
     override fun onResume() {
@@ -120,8 +162,8 @@ class BatteryFragment : Fragment() {
         isInForeground = true
         cellBarsInitialized = false
 
-        speedViewSpeed.speedTo(0.0f, 0)
-        labelStatus.text = getString(R.string.waitForBms)
+        binding.speedViewSpeed.speedTo(0.0f, 0)
+        binding.labelStatus.text = getString(R.string.waitForBms)
     }
 
     override fun onPause() {
@@ -135,19 +177,15 @@ class BatteryFragment : Fragment() {
         }
 
         requireActivity().runOnUiThread {
-            if (!cellBarsInitialized) {
-                initCellBars(batteryData.cellCount)
-            }
-
             // Power Gauge
             val powerUsage = batteryData.power * -1.0f
 
-            speedViewSpeed.speedTo(powerUsage, 1000)
+            binding.speedViewSpeed.speedTo(powerUsage, 1000)
 
             if (powerUsage < 0.0f) {
-                labelPower.text = "+${powerUsage.roundToInt() * -1}"
+                binding.labelPower.text = "+${powerUsage.roundToInt() * -1}"
             } else {
-                labelPower.text = powerUsage.roundToInt().toString()
+                binding.labelPower.text = powerUsage.roundToInt().toString()
             }
 
             // Remaining Time
@@ -183,63 +221,48 @@ class BatteryFragment : Fragment() {
             val remainingMinutes = (wattSeconds % 3600) / 60
             val remainingHours = (wattSeconds - remainingMinutes) / 3600
 
-            labelTime.text = String.format("%02d:%02d", remainingHours.roundToInt(), remainingMinutes.roundToInt())
+            binding.labelTime.text = String.format("%02d:%02d", remainingHours.roundToInt(), remainingMinutes.roundToInt())
 
-            // Cell Bars
-            for (i in 0 until batteryData.cellCount) {
-                cellBars[i].progress = maxCellVoltage - (batteryData.cellVoltages[i] * 1000.0f).roundToInt()
+            // Cell Bar-Diagram
+            val cellBars = ArrayList<BarEntry>()
 
-                val progress = ((batteryData.cellVoltages[i] - (minCellVoltage / 1000.0f)) / ((maxCellVoltage / 1000.0f) - (minCellVoltage / 1000.0f))) * 100.0f
-                uiColorCapacityProgressBar(progress, cellBars[i])
+            for ((i, cell) in batteryData.cellVoltages.withIndex()) {
+                cellBars.add(BarEntry(i.toFloat(), cell))
             }
 
+            val barDataSetVoltage = BarDataSet(cellBars, "Cell Voltages")
+            barDataSetVoltage.valueTextColor = resources.getColor(R.color.white)
+            barDataSetVoltage.valueTextSize = 12.0f
+            barDataSetVoltage.valueFormatter = DefaultValueFormatter(2)
+            barDataSetVoltage.setColors(resources.getColor(R.color.primaryLightGreen))
+
+            val barData = BarData(barDataSetVoltage)
+            binding.barchartCells.data = barData
+            binding.barchartCells.invalidate()
+
             // Row 1
-            labelVoltage.text = roundTo(batteryData.voltage, 1).toString()
+            binding.labelVoltage.text = roundTo(batteryData.voltage, 1).toString()
 
             val totalPercentage = ((batteryData.percentage) * 1000.0f).roundToInt() / 10.0f
 
-            labelPercentage.text = totalPercentage.toString()
-            uiColorCapacityTextView(totalPercentage, labelPercentage)
+            binding.labelPercentage.text = totalPercentage.toString()
+            uiColorCapacityTextView(totalPercentage, binding.labelPercentage)
 
             uiBatteryCapacityBar(totalPercentage)
 
             // Row 2
-            labelCurrent.text = String.format(Locale.US, "%.1f", roundTo(batteryData.current, 1))
-            uiColorEnergyTextView(batteryData.current, labelCurrent)
+            binding.labelCurrent.text = String.format(Locale.US, "%.1f", roundTo(batteryData.current, 1))
+            uiColorEnergyTextView(batteryData.current, binding.labelCurrent)
 
-            labelCapacityWh.text = batteryData.watthours.roundToInt().toString()
-            uiColorCapacityTextView(totalPercentage, labelCapacityWh)
+            binding.labelCapacityWh.text = batteryData.watthours.roundToInt().toString()
+            uiColorCapacityTextView(totalPercentage, binding.labelCapacityWh)
 
             // Row 3
-            labelTemperature.text = roundTo(batteryData.avgTemperature, 1).toString()
-            uiColorTemperatureTextView(batteryData.avgTemperature, labelTemperature)
+            binding.labelTemperature.text = roundTo(batteryData.avgTemperature, 1).toString()
+            uiColorTemperatureTextView(batteryData.avgTemperature, binding.labelTemperature)
 
-            labelTemperatureMax.text = roundTo(batteryData.maxTemperature, 1).toString()
-            uiColorTemperatureTextView(batteryData.maxTemperature, labelTemperatureMax)
-        }
-    }
-
-    private fun initCellBars(cellCount: Int) {
-        cellBarsInitialized = true
-        cellBars = ArrayList(cellCount)
-
-        for (i in 0 until cellCount) {
-            val progressBar = ProgressBar(requireContext(), null, android.R.attr.progressBarStyleHorizontal)
-
-            progressBar.scaleY = 2.0f
-            progressBar.scaleX = 1.0f
-            progressBar.rotation = 270.0f
-            progressBar.min = 0
-            progressBar.max = maxCellVoltage - minCellVoltage
-
-            val layoutParams = LinearLayout.LayoutParams(layoutCells.width / cellCount, 20)
-            layoutParams.setMargins(0, 0, 0, 0)
-            progressBar.setPadding(0, 0, 0, 0)
-
-            progressBar.layoutParams = layoutParams
-
-            cellBars.add(progressBar)
-            layoutCells.addView(cellBars[i])
+            binding.labelTemperatureMax.text = roundTo(batteryData.maxTemperature, 1).toString()
+            uiColorTemperatureTextView(batteryData.maxTemperature, binding.labelTemperatureMax)
         }
     }
 
@@ -322,78 +345,78 @@ class BatteryFragment : Fragment() {
     private fun uiBatteryCapacityBar(value: Float) {
         when {
             value == 0.0f -> {
-                progressBarBattery1.progress = 0
-                progressBarBattery2.progress = 0
-                progressBarBattery3.progress = 0
-                progressBarBattery4.progress = 0
-                progressBarBattery5.progress = 0
+                binding.progressBarBattery1.progress = 0
+                binding.progressBarBattery2.progress = 0
+                binding.progressBarBattery3.progress = 0
+                binding.progressBarBattery4.progress = 0
+                binding.progressBarBattery5.progress = 0
             }
             value < 20.0f -> {
                 val newValue = value * 5.0f
-                uiColorCapacityProgressBar(newValue, progressBarBattery1)
-                progressBarBattery1.progress = newValue.roundToInt()
-                progressBarBattery2.progress = 0
-                progressBarBattery3.progress = 0
-                progressBarBattery4.progress = 0
-                progressBarBattery5.progress = 0
+                uiColorCapacityProgressBar(newValue, binding.progressBarBattery1)
+                binding.progressBarBattery1.progress = newValue.roundToInt()
+                binding.progressBarBattery2.progress = 0
+                binding.progressBarBattery3.progress = 0
+                binding.progressBarBattery4.progress = 0
+                binding.progressBarBattery5.progress = 0
             }
             value < 40.0f -> {
-                progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery1.progress = 100
+                binding.progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery1.progress = 100
                 val newValue = (value - 20.0f) * 5.0f
-                uiColorCapacityProgressBar(newValue, progressBarBattery2)
-                progressBarBattery2.progress = newValue.roundToInt()
-                progressBarBattery3.progress = 0
-                progressBarBattery4.progress = 0
-                progressBarBattery5.progress = 0
+                uiColorCapacityProgressBar(newValue, binding.progressBarBattery2)
+                binding.progressBarBattery2.progress = newValue.roundToInt()
+                binding.progressBarBattery3.progress = 0
+                binding.progressBarBattery4.progress = 0
+                binding.progressBarBattery5.progress = 0
             }
             value < 60.0f -> {
-                progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery1.progress = 100
-                progressBarBattery2.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery2.progress = 100
+                binding.progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery1.progress = 100
+                binding.progressBarBattery2.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery2.progress = 100
                 val newValue = (value - 40.0f) * 5.0f
-                uiColorCapacityProgressBar(newValue, progressBarBattery3)
-                progressBarBattery3.progress = newValue.roundToInt()
-                progressBarBattery4.progress = 0
-                progressBarBattery5.progress = 0
+                uiColorCapacityProgressBar(newValue, binding.progressBarBattery3)
+                binding.progressBarBattery3.progress = newValue.roundToInt()
+                binding.progressBarBattery4.progress = 0
+                binding.progressBarBattery5.progress = 0
             }
             value < 80.0f -> {
-                progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery1.progress = 100
-                progressBarBattery2.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery2.progress = 100
-                progressBarBattery3.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery3.progress = 100
+                binding.progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery1.progress = 100
+                binding.progressBarBattery2.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery2.progress = 100
+                binding.progressBarBattery3.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery3.progress = 100
                 val newValue = (value - 60.0f) * 5.0f
-                uiColorCapacityProgressBar(newValue, progressBarBattery4)
-                progressBarBattery4.progress = newValue.roundToInt()
-                progressBarBattery5.progress = 0
+                uiColorCapacityProgressBar(newValue, binding.progressBarBattery4)
+                binding.progressBarBattery4.progress = newValue.roundToInt()
+                binding.progressBarBattery5.progress = 0
             }
             value < 100.0f -> {
-                progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery1.progress = 100
-                progressBarBattery2.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery2.progress = 100
-                progressBarBattery3.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery3.progress = 100
-                progressBarBattery4.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery4.progress = 100
+                binding.progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery1.progress = 100
+                binding.progressBarBattery2.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery2.progress = 100
+                binding.progressBarBattery3.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery3.progress = 100
+                binding.progressBarBattery4.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery4.progress = 100
                 val newValue = (value - 80.0f) * 5.0f
-                uiColorCapacityProgressBar(newValue, progressBarBattery5)
-                progressBarBattery5.progress = newValue.roundToInt()
+                uiColorCapacityProgressBar(newValue, binding.progressBarBattery5)
+                binding.progressBarBattery5.progress = newValue.roundToInt()
             }
             else -> {
-                progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery1.progress = 100
-                progressBarBattery2.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery2.progress = 100
-                progressBarBattery3.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery3.progress = 100
-                progressBarBattery4.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery4.progress = 100
-                progressBarBattery5.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-                progressBarBattery5.progress = 100
+                binding.progressBarBattery1.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery1.progress = 100
+                binding.progressBarBattery2.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery2.progress = 100
+                binding.progressBarBattery3.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery3.progress = 100
+                binding.progressBarBattery4.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery4.progress = 100
+                binding.progressBarBattery5.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
+                binding.progressBarBattery5.progress = 100
             }
         }
     }

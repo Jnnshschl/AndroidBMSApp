@@ -4,17 +4,33 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
-import kotlinx.android.synthetic.main.activity_main.*
+import de.jnns.bmsmonitor.bluetooth.BleService
+import de.jnns.bmsmonitor.data.BatteryData
+import de.jnns.bmsmonitor.databinding.ActivityMainBinding
+import de.jnns.bmsmonitor.services.BikeService
+import de.jnns.bmsmonitor.services.BmsService
+import io.realm.Realm
+import io.realm.kotlin.where
 
 @ExperimentalUnsignedTypes
 class MainActivity : AppCompatActivity() {
+    val binding get() = _binding!!
+
+    private var _binding: ActivityMainBinding? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        Realm.init(this)
+
+        _binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         val batteryEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("batteryEnabled", false)
         val bikeEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("bikeEnabled", false)
@@ -29,7 +45,14 @@ class MainActivity : AppCompatActivity() {
             if (bikeEnabled) {
                 Intent(this, BikeService::class.java).also { intent -> startService(intent) }
             }
+
+            Intent(this, BleService::class.java).also { intent -> startService(intent) }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

@@ -20,12 +20,12 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".BmsService" />
-        <service android:name=".BikeService" />
+        <service android:name=".services.BmsService" android:stopWithTask="true" />
+        <service android:name=".services.BikeService" android:stopWithTask="true" />
+        <service android:name=".bluetooth.BleService" android:stopWithTask="true" />
     </application>
 
 </manifest>

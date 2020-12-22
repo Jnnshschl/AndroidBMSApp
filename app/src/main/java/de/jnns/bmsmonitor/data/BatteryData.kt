@@ -1,18 +1,21 @@
 package de.jnns.bmsmonitor.data
 
-class BatteryData {
-    var current = 0.0f
+import io.realm.RealmList
+import io.realm.RealmObject
 
-    var totalCapacity = 0.0f
-    var currentCapacity = 0.0f
-
-    var cycles: Int = 0
-
-    var temperatureCount: Int = 0
-    var cellCount = 0
-
-    lateinit var temperatures: FloatArray
-    lateinit var cellVoltages: FloatArray
+open class BatteryData(
+    var timestamp: Long = 0L,
+    var bleName: String = "",
+    var bleAddress: String = "",
+    var current: Float = 0.0f,
+    var totalCapacity: Float = 0.0f,
+    var currentCapacity: Float = 0.0f,
+    var cycles: Int = 0,
+    var temperatureCount: Int = 0,
+    var cellCount: Int = 0,
+    var temperatures: RealmList<Float> = RealmList<Float>(),
+    var cellVoltages: RealmList<Float> = RealmList<Float>()
+) : RealmObject() {
 
     val voltage: Float
         get() {

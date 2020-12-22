@@ -1,6 +1,9 @@
 package de.jnns.bmsmonitor.data
 
-class BikeData {
-    var speed = 0
-    var assistLevel = 0
-}
+import io.realm.RealmObject
+
+open class BikeData(
+    var timestamp: Long = 0L,
+    var speed: Int = 0,
+    var assistLevel: Int = 0
+) : RealmObject()

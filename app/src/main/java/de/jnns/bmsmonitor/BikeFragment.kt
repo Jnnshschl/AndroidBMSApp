@@ -16,22 +16,20 @@ import androidx.preference.PreferenceManager
 import com.github.anastr.speedviewlib.components.Section
 import com.google.gson.Gson
 import de.jnns.bmsmonitor.data.BikeData
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_battery.*
-import kotlinx.android.synthetic.main.fragment_battery.labelPower
-import kotlinx.android.synthetic.main.fragment_battery.labelStatus
-import kotlinx.android.synthetic.main.fragment_battery.speedViewSpeed
-import kotlinx.android.synthetic.main.fragment_bike.*
+import de.jnns.bmsmonitor.databinding.FragmentBatteryBinding
+import de.jnns.bmsmonitor.databinding.FragmentBikeBinding
 
+@ExperimentalUnsignedTypes
 class BikeFragment : Fragment() {
+    private var _binding: FragmentBikeBinding? = null
+    private val binding get() = _binding!!
+
     private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             try {
                 val msg: String = intent.getStringExtra("bikeData")
 
-                if (labelStatus != null) {
-                    labelStatus.text = String.format(resources.getString(R.string.connectedToBike), intent.getStringExtra("deviceName"))
-                }
+                binding.labelStatus.text = String.format(resources.getString(R.string.connectedToBike), intent.getStringExtra("deviceName"))
 
                 if (msg.isNotEmpty()) {
                     updateUi(Gson().fromJson(msg, BikeData::class.java))
@@ -45,15 +43,16 @@ class BikeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver, IntentFilter("bikeDataIntent"))
-        return inflater.inflate(R.layout.fragment_bike, container, false)
+        _binding = FragmentBikeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().bottomNavigation.setOnNavigationItemSelectedListener { item ->
+        (requireActivity() as MainActivity).binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.page_battery -> {
                     requireActivity().title = getString(R.string.app_name)
@@ -65,12 +64,17 @@ class BikeFragment : Fragment() {
                     requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_bikeFragment_to_settingsFragment)
                     true
                 }
+                R.id.page_stats -> {
+                    requireActivity().title = getString(R.string.appNameStats)
+                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_bikeFragment_to_statsFragment)
+                    true
+                }
                 else -> false
             }
         }
 
-        speedViewSpeed.clearSections()
-        speedViewSpeed.addSections(
+        binding.speedViewSpeed.clearSections()
+        binding.speedViewSpeed.addSections(
             Section(0.0f, 0.2f, ContextCompat.getColor(requireContext(), R.color.white), 72.0f),
             Section(0.2f, 0.4f, ContextCompat.getColor(requireContext(), R.color.batteryDischargeLow), 72.0f),
             Section(0.4f, 0.6f, ContextCompat.getColor(requireContext(), R.color.batteryDischargeMedium), 72.0f),
@@ -78,15 +82,20 @@ class BikeFragment : Fragment() {
             Section(0.8f, 1.0f, ContextCompat.getColor(requireContext(), R.color.batteryDischargeHighest), 72.0f)
         )
 
-        speedViewSpeed.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxSpeed", "35")!!.toFloat()
+        binding.speedViewSpeed.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxSpeed", "35")!!.toFloat()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
     private fun updateUi(bikeData: BikeData) {
         requireActivity().runOnUiThread {
-            speedViewSpeed.speedTo(bikeData.speed.toFloat())
+            binding.speedViewSpeed.speedTo(bikeData.speed.toFloat())
 
-            labelSpeed.text = bikeData.speed.toString()
-            labelAssistLevel.text = bikeData.assistLevel.toString()
+            binding.labelSpeed.text = bikeData.speed.toString()
+            binding.labelAssistLevel.text = bikeData.assistLevel.toString()
         }
     }
 }
