@@ -31,6 +31,10 @@ class StatsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var selectedBatteryIndex = -1
+    private var selectedTimeDuration = 60
+
+    private var timeDurationNames = listOf("1m", "10s", "10m")
+    private var timeDurations = listOf(60, 10, 600)
 
     private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -79,14 +83,13 @@ class StatsFragment : Fragment() {
         val realm = Realm.getDefaultInstance()
         val batteries = realm.where<BatteryData>().distinct("bleAddress").findAll()
 
-        val spinnerAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_dropdown_item)
+        val spinnerBatteryAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_dropdown_item)
 
         for (battery in batteries) {
-            spinnerAdapter.add(battery.bleName)
+            spinnerBatteryAdapter.add(battery.bleName)
         }
 
-        binding.spinnerBattery.adapter = spinnerAdapter
-
+        binding.spinnerBattery.adapter = spinnerBatteryAdapter
         binding.spinnerBattery.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedBatteryIndex = position
@@ -95,6 +98,23 @@ class StatsFragment : Fragment() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 binding.linechartVoltage.invalidate()
+            }
+        }
+
+        val spinnerTimeAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_dropdown_item)
+
+        for (time in timeDurationNames) {
+            spinnerTimeAdapter.add(time)
+        }
+
+        binding.spinnerTime.adapter = spinnerTimeAdapter
+        binding.spinnerTime.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedTimeDuration = timeDurations[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                selectedTimeDuration = 60
             }
         }
     }
@@ -120,7 +140,7 @@ class StatsFragment : Fragment() {
 
         val dataSetVoltage = realm.where<BatteryData>()
             .equalTo("bleAddress", batteries[selectedBatteryIndex]!!.bleAddress)
-            .greaterThanOrEqualTo("timestamp", System.currentTimeMillis() - 600000)
+            .greaterThanOrEqualTo("timestamp", System.currentTimeMillis() - (selectedTimeDuration * 1000))
             .findAll()
 
         if (dataSetVoltage.count() > 0) {
