@@ -20,7 +20,7 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/linechartVoltage"
         android:layout_width="0dp"
-        android:layout_height="192dp"
+        android:layout_height="152dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +32,7 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/linechartCellVoltage"
         android:layout_width="0dp"
-        android:layout_height="192dp"
+        android:layout_height="152dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,12 +44,24 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/linechartPower"
         android:layout_width="0dp"
-        android:layout_height="192dp"
+        android:layout_height="152dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linechartCellVoltage">
+
+    </com.github.mikephil.charting.charts.LineChart>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/linechartCapacity"
+        android:layout_width="0dp"
+        android:layout_height="152dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linechartPower">
 
     </com.github.mikephil.charting.charts.LineChart>
 

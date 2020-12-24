@@ -22,7 +22,6 @@ import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import de.jnns.bmsmonitor.data.BatteryData
 import de.jnns.bmsmonitor.databinding.FragmentStatsBinding
 import io.realm.Realm
-import io.realm.Sort
 import io.realm.kotlin.where
 
 
@@ -75,6 +74,7 @@ class StatsFragment : Fragment() {
         configureLineChart(binding.linechartVoltage, 2)
         configureLineChart(binding.linechartCellVoltage, 3)
         configureLineChart(binding.linechartPower)
+        configureLineChart(binding.linechartCapacity, 0)
 
         val realm = Realm.getDefaultInstance()
         val batteries = realm.where<BatteryData>().distinct("bleAddress").findAll()
@@ -120,72 +120,77 @@ class StatsFragment : Fragment() {
 
         val dataSetVoltage = realm.where<BatteryData>()
             .equalTo("bleAddress", batteries[selectedBatteryIndex]!!.bleAddress)
-            .sort("timestamp", Sort.DESCENDING)
-            .limit(60)
+            .greaterThanOrEqualTo("timestamp", System.currentTimeMillis() - 600000)
             .findAll()
-            .sort("timestamp", Sort.ASCENDING)
 
-        if (dataSetVoltage.size > 0) {
-            val batteryVoltages = ArrayList<Entry>()
-            val batteryCellVoltages = ArrayList<ArrayList<Entry>>()
-            val batteryPower = ArrayList<Entry>()
+        if (dataSetVoltage.count() > 0) {
+            val minTime = dataSetVoltage.min("timestamp") as Long
 
-            val minTsVoltage = dataSetVoltage.min("timestamp") as Long
-
-            for (data in dataSetVoltage) {
-                val timestamp = (data.timestamp - minTsVoltage).toFloat()
-
-                batteryVoltages.add(Entry(timestamp, data.voltage))
-                batteryPower.add(Entry(timestamp, data.power))
-
-                for ((c, cellVoltage) in data.cellVoltages.withIndex()) {
-                    if (batteryCellVoltages.size <= c) {
-                        batteryCellVoltages.add(ArrayList())
-                    }
-
-                    batteryCellVoltages[c].add(Entry(timestamp, cellVoltage))
-                }
-            }
-
-            val voltageSet = LineDataSet(batteryVoltages, "Voltage")
-            voltageSet.setColors(resources.getColor(R.color.primaryLightGreen))
-            voltageSet.setDrawCircles(false)
-            voltageSet.setDrawCircleHole(false)
-            voltageSet.setDrawValues(false)
-            voltageSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
-
-            val voltageData = LineData(voltageSet)
-            binding.linechartVoltage.data = voltageData
-            binding.linechartVoltage.invalidate()
+            val batteryVoltages = buildDataset(dataSetVoltage.map { Pair(it.voltage, it.timestamp) }, minTime)
+            val batteryPower = buildDataset(dataSetVoltage.map { Pair(it.voltage, it.timestamp) }, minTime)
+            val batteryCellVoltages = buildDatasets(dataSetVoltage.map { Pair(it.cellVoltages, it.timestamp) }, minTime)
+            val batteryCapacity = buildDataset(dataSetVoltage.map { Pair((it.currentCapacity / it.totalCapacity) * 100.0f, it.timestamp) }, minTime)
 
             val cellVoltagesSets = ArrayList<LineDataSet>()
 
             for (c in 0 until dataSetVoltage[0]!!.cellCount) {
                 val cellSet = LineDataSet(batteryCellVoltages[c], "Cell $c Voltage")
-                cellSet.setColors(resources.getColor(R.color.primaryLightYellow))
-                cellSet.setDrawCircles(false)
-                cellSet.setDrawCircleHole(false)
-                cellSet.setDrawValues(false)
-                cellSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
-
                 cellVoltagesSets.add(cellSet)
             }
 
-            val cellVoltagesData = LineData(cellVoltagesSets.toList())
-            binding.linechartCellVoltage.data = cellVoltagesData
-            binding.linechartCellVoltage.invalidate()
-
-            val powerSet = LineDataSet(batteryPower, "Power Usage")
-            powerSet.setColors(resources.getColor(R.color.primary))
-            powerSet.setDrawCircles(false)
-            powerSet.setDrawCircleHole(false)
-            powerSet.setDrawValues(false)
-            powerSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
-
-            val powerData = LineData(powerSet)
-            binding.linechartPower.data = powerData
-            binding.linechartPower.invalidate()
+            updateChart(binding.linechartVoltage, requireActivity().getColor(R.color.primaryLightGreen), listOf(LineDataSet(batteryVoltages, "Voltage")))
+            updateChart(binding.linechartCellVoltage, requireActivity().getColor(R.color.primaryLightYellow), cellVoltagesSets)
+            updateChart(binding.linechartPower, requireActivity().getColor(R.color.primary), listOf(LineDataSet(batteryPower, "Power Usage")))
+            updateChart(binding.linechartCapacity, requireActivity().getColor(R.color.primaryLightRed), listOf(LineDataSet(batteryCapacity, "Capacity")))
         }
+    }
+
+    private fun buildDataset(inputData: List<Pair<Float, Long>>, minTime: Long): List<Entry> {
+        val entries = ArrayList<Entry>()
+
+        for (data in inputData) {
+            val timestamp = (data.second - minTime).toFloat() / 1000.0f
+            entries.add(Entry(timestamp, data.first))
+        }
+
+        return entries
+    }
+
+    private fun buildDatasets(inputData: List<Pair<List<Float>, Long>>, minTime: Long): List<List<Entry>> {
+        val entries = ArrayList<List<Entry>>()
+        val dataSetCount = inputData[0].first.count()
+
+        val dataSets = ArrayList<ArrayList<Pair<Float, Long>>>(dataSetCount)
+
+        for ((c, data) in inputData.withIndex()) {
+            for ((i, f) in data.first.withIndex()) {
+                if (c == 0) {
+                    dataSets.add(ArrayList())
+                }
+
+                dataSets[i].add(Pair(f, data.second))
+            }
+        }
+
+        for (dataSet in dataSets) {
+            entries.add(buildDataset(dataSet, minTime))
+        }
+
+        return entries
+    }
+
+    private fun updateChart(lineChart: LineChart, color: Int, dataSets: List<LineDataSet>) {
+        for (dataSet in dataSets) {
+            dataSet.setColors(color)
+            dataSet.setDrawCircles(false)
+            dataSet.setDrawCircleHole(false)
+            dataSet.setDrawValues(false)
+            // dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
+        }
+
+        val lineData = LineData(dataSets)
+        lineChart.data = lineData
+        lineChart.invalidate()
     }
 
     private fun configureLineChart(lineChart: LineChart, decimals: Int = 1) {
@@ -215,6 +220,7 @@ class StatsFragment : Fragment() {
         // lineChart.xAxis.setDrawAxisLine(false)
         lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
         lineChart.xAxis.textColor = resources.getColor(R.color.white)
+        lineChart.xAxis.valueFormatter = DefaultValueFormatter(0)
 
         lineChart.axisRight.isEnabled = false
         lineChart.xAxis.granularity = 7.0f
