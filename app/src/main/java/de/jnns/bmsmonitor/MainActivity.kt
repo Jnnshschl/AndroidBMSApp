@@ -4,18 +4,15 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import de.jnns.bmsmonitor.bluetooth.BleService
-import de.jnns.bmsmonitor.data.BatteryData
 import de.jnns.bmsmonitor.databinding.ActivityMainBinding
 import de.jnns.bmsmonitor.services.BikeService
 import de.jnns.bmsmonitor.services.BmsService
 import io.realm.Realm
-import io.realm.kotlin.where
 
 @ExperimentalUnsignedTypes
 class MainActivity : AppCompatActivity() {
@@ -27,6 +24,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Realm.init(this)
+        Realm.compactRealm(Realm.getDefaultConfiguration())
+
+        // delete data older than 24h
+        // val realm = Realm.getDefaultInstance()
+        // realm.where<BatteryData>().lessThan("timestamp", System.currentTimeMillis() - 86400000)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
