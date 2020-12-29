@@ -24,15 +24,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Realm.init(this)
-        Realm.compactRealm(Realm.getDefaultConfiguration())
+        Realm.compactRealm(Realm.getDefaultConfiguration()!!)
 
         // delete data older than 24h
         // val realm = Realm.getDefaultInstance()
         // realm.where<BatteryData>().lessThan("timestamp", System.currentTimeMillis() - 86400000)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(binding.root)
 
         val batteryEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("batteryEnabled", false)
         val bikeEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("bikeEnabled", false)

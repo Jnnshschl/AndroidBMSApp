@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.findNavController
+import androidx.preference.PreferenceManager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -32,6 +33,8 @@ class StatsFragment : Fragment() {
 
     private var selectedBatteryIndex = -1
     private var selectedTimeDuration = 60
+
+    private var needToAdjustYMinMax = true
 
     private var timeDurationNames = listOf("1m", "10s", "10m")
     private var timeDurations = listOf(60, 10, 600)
@@ -77,12 +80,24 @@ class StatsFragment : Fragment() {
 
         configureLineChart(binding.linechartVoltage, 2)
         configureLineChart(binding.linechartCellVoltage, 3)
-        configureLineChart(binding.linechartPower)
-        configureLineChart(binding.linechartCapacity, 0)
+        configureLineChart(binding.linechartPower, 0)
+        configureLineChart(binding.linechartCapacity, 1)
+
+        binding.linechartCellVoltage.axisLeft.axisMinimum = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minCellVoltage", "2500")!!.toFloat() / 1000.0f
+        binding.linechartCellVoltage.axisLeft.axisMaximum = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxCellVoltage", "4200")!!.toFloat() / 1000.0f
+
+        binding.linechartPower.axisLeft.axisMinimum = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minPower", "-500")!!.toFloat()
+        binding.linechartPower.axisLeft.axisMaximum = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxPower", "1000")!!.toFloat()
+        binding.linechartPower.axisLeft.granularity = (binding.linechartPower.axisLeft.axisMaximum - binding.linechartPower.axisLeft.axisMinimum) / 6.0f
+
+        binding.linechartCapacity.axisLeft.axisMinimum = 0.0f
+        binding.linechartCapacity.axisLeft.axisMaximum = 100.0f
+        binding.linechartCapacity.axisLeft.granularity = (binding.linechartCapacity.axisLeft.axisMaximum - binding.linechartCapacity.axisLeft.axisMinimum) / 6.0f
 
         val realm = Realm.getDefaultInstance()
         val batteries = realm.where<BatteryData>().distinct("bleAddress").findAll()
 
+        // Battery selection
         val spinnerBatteryAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_dropdown_item)
 
         for (battery in batteries) {
@@ -94,6 +109,8 @@ class StatsFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedBatteryIndex = position
                 updateUi()
+
+                needToAdjustYMinMax = true
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -101,6 +118,7 @@ class StatsFragment : Fragment() {
             }
         }
 
+        // Time selection
         val spinnerTimeAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_dropdown_item)
 
         for (time in timeDurationNames) {
@@ -130,6 +148,11 @@ class StatsFragment : Fragment() {
         selectedBatteryIndex = -1
     }
 
+    private fun setChartYMinMax(batteryData: BatteryData) {
+        binding.linechartVoltage.axisLeft.axisMinimum = 2.5f * batteryData.cellCount.toFloat()
+        binding.linechartVoltage.axisLeft.axisMaximum = 4.2f * batteryData.cellCount.toFloat()
+    }
+
     private fun updateUi() {
         if (selectedBatteryIndex == -1) {
             return
@@ -138,30 +161,46 @@ class StatsFragment : Fragment() {
         val realm = Realm.getDefaultInstance()
         val batteries = realm.where<BatteryData>().distinct("bleAddress").findAll()
 
-        val dataSetVoltage = realm.where<BatteryData>()
+        val batteryDataSet = realm.where<BatteryData>()
             .equalTo("bleAddress", batteries[selectedBatteryIndex]!!.bleAddress)
             .greaterThanOrEqualTo("timestamp", System.currentTimeMillis() - (selectedTimeDuration * 1000))
             .findAll()
 
-        if (dataSetVoltage.count() > 0) {
-            val minTime = dataSetVoltage.min("timestamp") as Long
+        if (batteryDataSet.count() > 0) {
+            if (needToAdjustYMinMax) {
+                setChartYMinMax(batteryDataSet[0]!!)
+            }
 
-            val batteryVoltages = buildDataset(dataSetVoltage.map { Pair(it.voltage, it.timestamp) }, minTime)
-            val batteryPower = buildDataset(dataSetVoltage.map { Pair(it.voltage, it.timestamp) }, minTime)
-            val batteryCellVoltages = buildDatasets(dataSetVoltage.map { Pair(it.cellVoltages, it.timestamp) }, minTime)
-            val batteryCapacity = buildDataset(dataSetVoltage.map { Pair((it.currentCapacity / it.totalCapacity) * 100.0f, it.timestamp) }, minTime)
+            val minTime = batteryDataSet.min("timestamp") as Long
+
+            // Voltage
+            val batteryVoltages = buildDataset(batteryDataSet.map { Pair(it.voltage, it.timestamp) }, minTime)
+            updateChart(binding.linechartVoltage, requireActivity().getColor(R.color.primaryLightGreen), listOf(LineDataSet(batteryVoltages, "Voltage")))
+
+            // Cell Voltages
+            val batteryCellVoltages = buildDatasets(batteryDataSet.map { Pair(it.cellVoltages, it.timestamp) }, minTime)
 
             val cellVoltagesSets = ArrayList<LineDataSet>()
 
-            for (c in 0 until dataSetVoltage[0]!!.cellCount) {
+            for (c in 0 until batteryDataSet[0]!!.cellCount) {
                 val cellSet = LineDataSet(batteryCellVoltages[c], "Cell $c Voltage")
                 cellVoltagesSets.add(cellSet)
             }
 
-            updateChart(binding.linechartVoltage, requireActivity().getColor(R.color.primaryLightGreen), listOf(LineDataSet(batteryVoltages, "Voltage")))
             updateChart(binding.linechartCellVoltage, requireActivity().getColor(R.color.primaryLightYellow), cellVoltagesSets)
-            updateChart(binding.linechartPower, requireActivity().getColor(R.color.primary), listOf(LineDataSet(batteryPower, "Power Usage")))
-            updateChart(binding.linechartCapacity, requireActivity().getColor(R.color.primaryLightRed), listOf(LineDataSet(batteryCapacity, "Capacity")))
+
+            // Power
+            val batteryPower = buildDataset(batteryDataSet.map { Pair(it.power, it.timestamp) }, minTime)
+            updateChart(binding.linechartPower, requireActivity().getColor(R.color.primaryLightRed), listOf(LineDataSet(batteryPower, "Power Usage")))
+
+            // Capacity
+            val batteryCapacity = buildDataset(batteryDataSet.map { Pair((it.currentCapacity / it.totalCapacity) * 100.0f, it.timestamp) }, minTime)
+            updateChart(binding.linechartCapacity, requireActivity().getColor(R.color.primaryLightGreen), listOf(LineDataSet(batteryCapacity, "Capacity")))
+        } else {
+            binding.linechartVoltage.clear()
+            binding.linechartCellVoltage.clear()
+            binding.linechartPower.clear()
+            binding.linechartCapacity.clear()
         }
     }
 
@@ -213,9 +252,9 @@ class StatsFragment : Fragment() {
         lineChart.invalidate()
     }
 
-    private fun configureLineChart(lineChart: LineChart, decimals: Int = 1) {
-        lineChart.setNoDataTextColor(resources.getColor(R.color.white))
-        lineChart.setNoDataText("...")
+    private fun configureLineChart(lineChart: LineChart, decimals: Int = 0) {
+        lineChart.setNoDataTextColor(requireActivity().getColor(R.color.white))
+        lineChart.setNoDataText("No Data...")
 
         lineChart.setPinchZoom(false)
         lineChart.setTouchEnabled(false)
@@ -232,14 +271,14 @@ class StatsFragment : Fragment() {
         lineChart.axisLeft.setDrawGridLines(false)
         // lineChart.axisLeft.setDrawLabels(false)
         // lineChart.axisLeft.setDrawAxisLine(false)
-        lineChart.axisLeft.textColor = resources.getColor(R.color.white)
+        lineChart.axisLeft.textColor = requireActivity().getColor(R.color.white)
         lineChart.axisLeft.valueFormatter = DefaultValueFormatter(decimals)
 
         lineChart.xAxis.setDrawGridLines(false)
         // lineChart.xAxis.setDrawLabels(false)
         // lineChart.xAxis.setDrawAxisLine(false)
         lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        lineChart.xAxis.textColor = resources.getColor(R.color.white)
+        lineChart.xAxis.textColor = requireActivity().getColor(R.color.white)
         lineChart.xAxis.valueFormatter = DefaultValueFormatter(0)
 
         lineChart.axisRight.isEnabled = false

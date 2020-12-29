@@ -17,10 +17,11 @@ class BikeGattClientCallback(
     val onConnectionFailed: () -> Unit
 ) :
     BluetoothGattCallback() {
-    lateinit var lcdToMcuCharacteristic: BluetoothGattCharacteristic
-    lateinit var mcuToLcdCharacteristic: BluetoothGattCharacteristic
 
     var isConnected = false
+
+    lateinit var lcdToMcuCharacteristic: BluetoothGattCharacteristic
+    lateinit var mcuToLcdCharacteristic: BluetoothGattCharacteristic
 
     private val serviceUuid = UUID.fromString("c5bcf4cf-48fc-4cbd-a103-22d839e13d33")
     private val lcdToMcuUuid = UUID.fromString("e756a872-cf61-4e8a-bfe7-68868ce56092")

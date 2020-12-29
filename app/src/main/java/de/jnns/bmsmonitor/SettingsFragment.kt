@@ -16,16 +16,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mainActivity = requireActivity() as MainActivity
         val btPreference = findPreference<ListPreference>("macAddress") as ListPreference
+        val btPreferenceBike = findPreference<ListPreference>("macAddressBike") as ListPreference
 
         val bleNames = BleManager.i.getBleNames()
         bleNames.add("None")
         btPreference.entries = bleNames.toTypedArray()
+        btPreferenceBike.entries = bleNames.toTypedArray()
 
         val bleAddresses = BleManager.i.getBleAddresses()
         bleAddresses.add("0")
         btPreference.entryValues = bleAddresses.toTypedArray()
+        btPreferenceBike.entryValues = bleAddresses.toTypedArray()
+
+        val mainActivity = requireActivity() as MainActivity
 
         mainActivity.binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {

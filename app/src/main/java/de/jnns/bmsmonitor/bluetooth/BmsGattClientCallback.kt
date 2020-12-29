@@ -17,10 +17,11 @@ class BmsGattClientCallback(
     val onConnectionFailed: () -> Unit
 ) :
     BluetoothGattCallback() {
-    lateinit var readCharacteristic: BluetoothGattCharacteristic
-    lateinit var writeCharacteristic: BluetoothGattCharacteristic
 
     var isConnected = false
+
+    lateinit var readCharacteristic: BluetoothGattCharacteristic
+    lateinit var writeCharacteristic: BluetoothGattCharacteristic
 
     private val uartUuid = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb")
     private val rxUuid = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb")

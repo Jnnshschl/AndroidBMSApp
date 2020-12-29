@@ -5,18 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.github.anastr.speedviewlib.components.Section
 import com.google.gson.Gson
 import de.jnns.bmsmonitor.data.BikeData
-import de.jnns.bmsmonitor.databinding.FragmentBatteryBinding
 import de.jnns.bmsmonitor.databinding.FragmentBikeBinding
 
 @ExperimentalUnsignedTypes
@@ -27,7 +26,7 @@ class BikeFragment : Fragment() {
     private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             try {
-                val msg: String = intent.getStringExtra("bikeData")
+                val msg: String = intent.getStringExtra("bikeData")!!
 
                 binding.labelStatus.text = String.format(resources.getString(R.string.connectedToBike), intent.getStringExtra("deviceName"))
 

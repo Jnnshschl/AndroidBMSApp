@@ -1,7 +1,5 @@
 package de.jnns.bmsmonitor.bike
 
-import kotlin.experimental.and
-
 @ExperimentalUnsignedTypes
 class LcdToMcuResponse(bytes: ByteArray) {
     var p5BatteryCurve: Int = 0

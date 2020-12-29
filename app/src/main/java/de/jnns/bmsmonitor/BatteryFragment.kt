@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,12 +20,7 @@ import com.github.anastr.speedviewlib.components.Section
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
-import com.github.mikephil.charting.formatter.IValueFormatter
-import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
-import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.gson.Gson
 import de.jnns.bmsmonitor.data.BatteryData
 import de.jnns.bmsmonitor.databinding.FragmentBatteryBinding
@@ -43,23 +37,19 @@ class BatteryFragment : Fragment() {
     // no need to refresh data in the background
     private var isInForeground = false
 
-    // used to create the cell bars
-    private lateinit var cellBars: ArrayList<ProgressBar>
-    private var cellBarsInitialized = false
-
     // time calculation smoothing
     // default 5 min
     private var smoothCount = 60 * 5
     private var smoothIndex = 0
     private var wattValues = FloatArray(smoothCount)
 
-    private var minCellVoltage = 4200
-    private var maxCellVoltage = 3000
+    private var minCellVoltage = 0
+    private var maxCellVoltage = 0
 
     private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             try {
-                val msg: String = intent.getStringExtra("batteryData")
+                val msg: String = intent.getStringExtra("batteryData")!!
 
                 binding.labelStatus.text = String.format(resources.getString(R.string.connectedToBms), intent.getStringExtra("deviceName"))
 
@@ -126,10 +116,10 @@ class BatteryFragment : Fragment() {
         binding.speedViewSpeed.minSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minPower", "-500")!!.toFloat()
         binding.speedViewSpeed.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxPower", "1000")!!.toFloat()
 
-        minCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minCellVoltage", "1000")!!.toInt()
-        maxCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxCellVoltage", "1000")!!.toInt()
+        minCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minCellVoltage", "2500")!!.toInt()
+        maxCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxCellVoltage", "4200")!!.toInt()
 
-        binding.barchartCells.setNoDataTextColor(resources.getColor(R.color.white))
+        binding.barchartCells.setNoDataTextColor(requireActivity().getColor(R.color.white))
         binding.barchartCells.setNoDataText("...")
 
         binding.barchartCells.setPinchZoom(false)
@@ -160,7 +150,6 @@ class BatteryFragment : Fragment() {
         super.onResume()
 
         isInForeground = true
-        cellBarsInitialized = false
 
         binding.speedViewSpeed.speedTo(0.0f, 0)
         binding.labelStatus.text = getString(R.string.waitForBms)
@@ -231,10 +220,10 @@ class BatteryFragment : Fragment() {
             }
 
             val barDataSetVoltage = BarDataSet(cellBars, "Cell Voltages")
-            barDataSetVoltage.valueTextColor = resources.getColor(R.color.white)
+            barDataSetVoltage.valueTextColor = requireActivity().getColor(R.color.white)
             barDataSetVoltage.valueTextSize = 12.0f
             barDataSetVoltage.valueFormatter = DefaultValueFormatter(2)
-            barDataSetVoltage.setColors(resources.getColor(R.color.primaryLightGreen))
+            barDataSetVoltage.setColors(requireActivity().getColor(R.color.primaryLightGreen))
 
             val barData = BarData(barDataSetVoltage)
             binding.barchartCells.data = barData
@@ -421,7 +410,7 @@ class BatteryFragment : Fragment() {
         }
     }
 
-    private fun roundTo(value: Float, decimals: Int = 0): Float {
+    private fun roundTo(value: Float, decimals: Int): Float {
         if (value.isNaN() || value.isInfinite()) {
             return 0.0f
         }

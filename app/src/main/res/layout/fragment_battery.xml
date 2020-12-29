@@ -140,7 +140,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:background="@color/bgBase1"
         app:cardBackgroundColor="@color/bgBase1"
         app:cardCornerRadius="4dp"
@@ -337,6 +337,7 @@
                         android:id="@+id/imageViewBattery"
                         android:layout_width="48dp"
                         android:layout_height="64dp"
+                        android:layout_marginStart="4dp"
                         android:contentDescription="@string/connectedToBms"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -351,74 +352,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            app:layout_flexBasisPercent="50%"
-            tools:layout_editor_absoluteX="198dp">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardPower"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@color/bgBase1"
-                app:cardBackgroundColor="@color/bgBase1"
-                app:cardCornerRadius="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="0dp">
-
-                    <TextView
-                        android:id="@+id/labelCapacityUnitWh"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginBottom="3dp"
-                        android:fontFamily="@font/aldrich"
-                        android:text="@string/unitDisplayWattHours"
-                        android:textColor="@color/darkBorder"
-                        android:textSize="24sp"
-                        android:typeface="monospace"
-                        app:layout_constraintBottom_toBottomOf="@+id/labelCapacityWh"
-                        app:layout_constraintStart_toEndOf="@+id/labelCapacityWh" />
-
-                    <TextView
-                        android:id="@+id/labelCapacityWh"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="@font/aldrich"
-                        android:text="@string/zeroDotZero"
-                        android:textColor="@color/white"
-                        android:textSize="32sp"
-                        android:typeface="monospace"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageViewCapacityWh"
-                        app:layout_constraintStart_toEndOf="@+id/imageViewCapacityWh"
-                        app:layout_constraintTop_toTopOf="@+id/imageViewCapacityWh" />
-
-                    <ImageView
-                        android:id="@+id/imageViewCapacityWh"
-                        android:layout_width="48dp"
-                        android:layout_height="64dp"
-                        android:contentDescription="@string/connectedToBms"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_battery" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            app:layout_flexBasisPercent="50%"
-            tools:layout_editor_absoluteY="73dp">
+            app:layout_flexBasisPercent="50%">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardEnergy"
@@ -469,6 +403,7 @@
                         android:id="@+id/imageViewCapacityPercent"
                         android:layout_width="48dp"
                         android:layout_height="64dp"
+                        android:layout_marginStart="4dp"
                         android:contentDescription="@string/connectedToBms"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -483,9 +418,73 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            app:layout_flexBasisPercent="50%"
-            tools:layout_editor_absoluteX="198dp"
-            tools:layout_editor_absoluteY="73dp">
+            app:layout_flexBasisPercent="50%">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPower"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/bgBase1"
+                app:cardBackgroundColor="@color/bgBase1"
+                app:cardCornerRadius="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="0dp">
+
+                    <TextView
+                        android:id="@+id/labelCapacityUnitWh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="3dp"
+                        android:fontFamily="@font/aldrich"
+                        android:text="@string/unitDisplayWattHours"
+                        android:textColor="@color/darkBorder"
+                        android:textSize="24sp"
+                        android:typeface="monospace"
+                        app:layout_constraintBottom_toBottomOf="@+id/labelCapacityWh"
+                        app:layout_constraintStart_toEndOf="@+id/labelCapacityWh" />
+
+                    <TextView
+                        android:id="@+id/labelCapacityWh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/aldrich"
+                        android:text="@string/zeroDotZero"
+                        android:textColor="@color/white"
+                        android:textSize="32sp"
+                        android:typeface="monospace"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageViewCapacityWh"
+                        app:layout_constraintStart_toEndOf="@+id/imageViewCapacityWh"
+                        app:layout_constraintTop_toTopOf="@+id/imageViewCapacityWh" />
+
+                    <ImageView
+                        android:id="@+id/imageViewCapacityWh"
+                        android:layout_width="48dp"
+                        android:layout_height="64dp"
+                        android:layout_marginStart="4dp"
+                        android:contentDescription="@string/connectedToBms"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_battery" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            app:layout_flexBasisPercent="50%">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardCapacityPercent"
@@ -536,6 +535,7 @@
                         android:id="@+id/imageViewEnergy"
                         android:layout_width="48dp"
                         android:layout_height="64dp"
+                        android:layout_marginStart="4dp"
                         android:contentDescription="@string/imageBattery"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -550,8 +550,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            app:layout_flexBasisPercent="50%"
-            tools:layout_editor_absoluteY="145dp">
+            app:layout_flexBasisPercent="50%">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardTemperatureAvg"
@@ -602,6 +601,7 @@
                         android:id="@+id/imageViewTemperatureAvg"
                         android:layout_width="48dp"
                         android:layout_height="64dp"
+                        android:layout_marginStart="4dp"
                         android:contentDescription="@string/imageBattery"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -616,9 +616,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            app:layout_flexBasisPercent="50%"
-            tools:layout_editor_absoluteX="198dp"
-            tools:layout_editor_absoluteY="145dp">
+            app:layout_flexBasisPercent="50%">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardTemperatureMax"
@@ -669,6 +667,7 @@
                         android:id="@+id/imageViewTemperatureMax"
                         android:layout_width="48dp"
                         android:layout_height="64dp"
+                        android:layout_marginStart="4dp"
                         android:contentDescription="@string/imageBattery"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

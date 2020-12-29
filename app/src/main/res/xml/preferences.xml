@@ -31,7 +31,7 @@
             app:title="@string/settingsBikeEnabled"
             app:useSimpleSummaryProvider="true" />
 
-        <EditTextPreference
+        <ListPreference
             app:icon="@drawable/ic_bluetooth"
             app:key="macAddressBike"
             app:title="@string/settingsBluetoothMacBike"
