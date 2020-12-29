@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">BMS Monitor</string>
+    <string name="app_name_big">BMS</string>
+    <string name="app_name_thin">Monitor</string>
     <string name="appNameSettings">BMS Monitor - Settings</string>
     <string name="appNameStats">BMS Monitor - Stats</string>
 

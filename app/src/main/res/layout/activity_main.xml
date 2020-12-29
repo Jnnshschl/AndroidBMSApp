@@ -21,23 +21,37 @@
 
         <ImageView
             android:id="@+id/imageBar"
-            android:layout_width="30dp"
+            android:layout_width="24dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
             android:contentDescription="@string/imageBattery"
             app:srcCompat="@drawable/ic_appbar_icon"
-            tools:layout_editor_absoluteX="36dp"
-            tools:layout_editor_absoluteY="16dp" />
+            tools:layout_editor_absoluteX="128dp"
+            tools:layout_editor_absoluteY="13dp" />
 
         <TextView
             android:id="@+id/toolbarTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/app_name"
+            android:fontFamily="@font/droid_sans_bold"
+            android:text="@string/app_name_big"
             android:textColor="@color/white"
             android:textSize="24sp"
             app:logo="@drawable/ic_appbar_icon" />
+
+        <TextView
+            android:id="@+id/toolbarTitleThin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/fira_sans_condensed_light"
+            android:text="@string/app_name_thin"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:logo="@drawable/ic_appbar_icon"
+            tools:layout_editor_absoluteX="209dp"
+            tools:layout_editor_absoluteY="11dp" />
 
     </androidx.appcompat.widget.Toolbar>
 
