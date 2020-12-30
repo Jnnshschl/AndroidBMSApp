@@ -223,67 +223,27 @@ class BatteryFragment : Fragment() {
             barDataSetVoltage.valueTextColor = requireActivity().getColor(R.color.white)
             barDataSetVoltage.valueTextSize = 12.0f
             barDataSetVoltage.valueFormatter = DefaultValueFormatter(2)
-            barDataSetVoltage.setColors(requireActivity().getColor(R.color.primaryLightGreen))
+            barDataSetVoltage.setColors(requireActivity().getColor(R.color.primary))
 
             val barData = BarData(barDataSetVoltage)
             binding.barchartCells.data = barData
             binding.barchartCells.invalidate()
 
             // Row 1
-            binding.labelVoltage.text = roundTo(batteryData.voltage, 1).toString()
-
             val totalPercentage = ((batteryData.percentage) * 1000.0f).roundToInt() / 10.0f
 
+            binding.labelVoltage.text = roundTo(batteryData.voltage, 1).toString()
             binding.labelPercentage.text = totalPercentage.toString()
-            uiColorCapacityTextView(totalPercentage, binding.labelPercentage)
 
             uiBatteryCapacityBar(totalPercentage)
 
             // Row 2
             binding.labelCurrent.text = String.format(Locale.US, "%.1f", roundTo(batteryData.current, 1))
-            uiColorEnergyTextView(batteryData.current, binding.labelCurrent)
-
             binding.labelCapacityWh.text = batteryData.watthours.roundToInt().toString()
-            uiColorCapacityTextView(totalPercentage, binding.labelCapacityWh)
 
             // Row 3
             binding.labelTemperature.text = roundTo(batteryData.avgTemperature, 1).toString()
-            uiColorTemperatureTextView(batteryData.avgTemperature, binding.labelTemperature)
-
             binding.labelTemperatureMax.text = roundTo(batteryData.maxTemperature, 1).toString()
-            uiColorTemperatureTextView(batteryData.maxTemperature, binding.labelTemperatureMax)
-        }
-    }
-
-    private fun uiColorEnergyTextView(value: Float, uiElement: TextView) {
-        when {
-            value > 0.0f -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.primaryLightGreen))
-            }
-            value == 0.0f -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-            }
-            else -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.primaryLightRed))
-            }
-        }
-    }
-
-    private fun uiColorCapacityTextView(value: Float, uiElement: TextView) {
-        // 80% skipped here because battery only gets charged to ~80 percent
-        when {
-            value < 20 -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.percentUnder20))
-            }
-            value < 40 -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.percentUnder40))
-            }
-            value < 70 -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.percentUnder70))
-            }
-            else -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-            }
         }
     }
 
@@ -301,32 +261,6 @@ class BatteryFragment : Fragment() {
             }
             else -> {
                 uiElement.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.percentUnder100))
-            }
-        }
-    }
-
-    private fun uiColorTemperatureTextView(value: Float, uiElement: TextView) {
-        when {
-            value < 0.0f -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.temperatureColdest))
-            }
-            value < 6.0f -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.temperatureColder))
-            }
-            value < 10.0f -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.temperatureCold))
-            }
-            value > 16.0f -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.temperatureHot))
-            }
-            value > 24.0f -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.temperatureHotter))
-            }
-            value > 36.0f -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.temperatureHottest))
-            }
-            else -> {
-                uiElement.setTextColor(ContextCompat.getColor(requireContext(), R.color.temperatureNeutral))
             }
         }
     }

@@ -59,4 +59,5 @@
     <string name="settingsMaxPower">Max Power (W)</string>
 
     <string name="settingsMaxSpeed">Max Speed (Km/h)</string>
+    <string name="cellbalance">Cell Balance</string>
 </resources>

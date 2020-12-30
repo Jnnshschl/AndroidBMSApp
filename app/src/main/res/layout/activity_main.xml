@@ -16,6 +16,7 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -34,11 +35,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:fontFamily="@font/droid_sans_bold"
+            android:fontFamily="@font/fira_sans_condensed"
             android:text="@string/app_name_big"
             android:textColor="@color/white"
             android:textSize="24sp"
-            app:logo="@drawable/ic_appbar_icon" />
+            android:textStyle="bold"
+            app:logo="@drawable/ic_appbar_icon"
+            tools:layout_editor_absoluteX="155dp"
+            tools:layout_editor_absoluteY="14dp" />
 
         <TextView
             android:id="@+id/toolbarTitleThin"
@@ -46,6 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/fira_sans_condensed_light"
+            android:paddingStart="4dp"
+            android:paddingTop="2dp"
             android:text="@string/app_name_thin"
             android:textColor="@color/white"
             android:textSize="24sp"
