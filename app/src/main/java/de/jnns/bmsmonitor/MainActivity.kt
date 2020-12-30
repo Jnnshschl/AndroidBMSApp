@@ -49,6 +49,21 @@ class MainActivity : AppCompatActivity() {
 
             Intent(this, BleService::class.java).also { intent -> startService(intent) }
         }
+
+        val batteryFragment = BatteryFragment()
+        val bikeFragment = BikeFragment()
+        val statsFragment = StatsFragment()
+        val settingsFragment = SettingsFragment()
+
+        binding.bottomNavigation.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.page_battery -> supportFragmentManager.beginTransaction().apply { replace(R.id.nav_host_fragment, batteryFragment).commit() }
+                R.id.page_bike -> supportFragmentManager.beginTransaction().apply { replace(R.id.nav_host_fragment, bikeFragment).commit() }
+                R.id.page_stats -> supportFragmentManager.beginTransaction().apply { replace(R.id.nav_host_fragment, statsFragment).commit() }
+                R.id.page_settings -> supportFragmentManager.beginTransaction().apply { replace(R.id.nav_host_fragment, settingsFragment).commit() }
+            }
+            true
+        }
     }
 
     override fun onDestroy() {
@@ -70,5 +85,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean = findNavController(R.id.nav_host_fragment).navigateUp()
+    override fun onSupportNavigateUp(): Boolean = findNavController(R.id.nav_host_fragment).navigateUp() || super.onSupportNavigateUp()
 }

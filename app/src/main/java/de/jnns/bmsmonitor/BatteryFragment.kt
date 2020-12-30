@@ -81,27 +81,6 @@ class BatteryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (requireActivity() as MainActivity).binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.page_bike -> {
-                    requireActivity().title = getString(R.string.app_name)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_batteryFragment_to_bikeFragment)
-                    true
-                }
-                R.id.page_settings -> {
-                    requireActivity().title = getString(R.string.appNameSettings)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_batteryFragment_to_settingsFragment)
-                    true
-                }
-                R.id.page_stats -> {
-                    requireActivity().title = getString(R.string.appNameStats)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_batteryFragment_to_statsFragment)
-                    true
-                }
-                else -> false
-            }
-        }
-
         binding.speedViewSpeed.clearSections()
         binding.speedViewSpeed.addSections(
             Section(0.00000000f, 0.11111111f, ContextCompat.getColor(requireContext(), R.color.batteryChargeHigh), 72.0f),

@@ -57,27 +57,6 @@ class StatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (requireActivity() as MainActivity).binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.page_battery -> {
-                    requireActivity().title = getString(R.string.appNameSettings)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_statsFragment_to_batteryFragment)
-                    true
-                }
-                R.id.page_bike -> {
-                    requireActivity().title = getString(R.string.app_name)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_statsFragment_to_bikeFragment)
-                    true
-                }
-                R.id.page_settings -> {
-                    requireActivity().title = getString(R.string.appNameStats)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_statsFragment_to_settingsFragment)
-                    true
-                }
-                else -> false
-            }
-        }
-
         configureLineChart(binding.linechartVoltage, 2)
         configureLineChart(binding.linechartCellVoltage, 3)
         configureLineChart(binding.linechartPower, 0)

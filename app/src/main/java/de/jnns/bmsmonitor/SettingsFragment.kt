@@ -28,28 +28,5 @@ class SettingsFragment : PreferenceFragmentCompat() {
         bleAddresses.add("0")
         btPreference.entryValues = bleAddresses.toTypedArray()
         btPreferenceBike.entryValues = bleAddresses.toTypedArray()
-
-        val mainActivity = requireActivity() as MainActivity
-
-        mainActivity.binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.page_battery -> {
-                    requireActivity().title = getString(R.string.appNameSettings)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_settingsFragment_to_batteryFragment)
-                    true
-                }
-                R.id.page_bike -> {
-                    requireActivity().title = getString(R.string.app_name)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_settingsFragment_to_bikeFragment)
-                    true
-                }
-                R.id.page_stats -> {
-                    requireActivity().title = getString(R.string.appNameStats)
-                    requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.action_settingsFragment_to_statsFragment)
-                    true
-                }
-                else -> false
-            }
-        }
     }
 }

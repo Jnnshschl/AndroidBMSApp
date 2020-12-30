@@ -3,65 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/batteryFragment">
+    app:startDestination="@id/navigation_battery">
+
     <fragment
-        android:id="@+id/batteryFragment"
+        android:id="@+id/navigation_battery"
         android:name="de.jnns.bmsmonitor.BatteryFragment"
         android:label="fragment_battery"
-        tools:layout="@layout/fragment_battery">
-        <action
-            android:id="@+id/action_batteryFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_batteryFragment_to_bikeFragment"
-            app:destination="@id/bikeFragment" />
-        <action
-            android:id="@+id/action_batteryFragment_to_statsFragment"
-            app:destination="@id/statsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_battery" />
+
     <fragment
-        android:id="@+id/settingsFragment"
+        android:id="@+id/navigation_settings"
         android:name="de.jnns.bmsmonitor.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings">
-        <action
-            android:id="@+id/action_settingsFragment_to_batteryFragment"
-            app:destination="@id/batteryFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_bikeFragment"
-            app:destination="@id/bikeFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_statsFragment"
-            app:destination="@id/statsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_settings" />
+
     <fragment
-        android:id="@+id/bikeFragment"
+        android:id="@+id/navigation_bike"
         android:name="de.jnns.bmsmonitor.BikeFragment"
         android:label="fragment_bike"
-        tools:layout="@layout/fragment_bike">
-        <action
-            android:id="@+id/action_bikeFragment_to_batteryFragment"
-            app:destination="@id/batteryFragment" />
-        <action
-            android:id="@+id/action_bikeFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_bikeFragment_to_statsFragment"
-            app:destination="@id/statsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_bike" />
+
     <fragment
-        android:id="@+id/statsFragment"
+        android:id="@+id/navigation_stats"
         android:name="de.jnns.bmsmonitor.StatsFragment"
         android:label="fragment_stats"
-        tools:layout="@layout/fragment_stats" >
-        <action
-            android:id="@+id/action_statsFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_statsFragment_to_bikeFragment"
-            app:destination="@id/bikeFragment" />
-        <action
-            android:id="@+id/action_statsFragment_to_batteryFragment"
-            app:destination="@id/batteryFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_stats" />
 </navigation>
