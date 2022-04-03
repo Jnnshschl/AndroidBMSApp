@@ -13,7 +13,7 @@ steps:
   commands:
   - ./gradlew test
 
-- name: test
+- name: build
   image: mingc/android-build-box
   commands:
   - ./gradlew build
