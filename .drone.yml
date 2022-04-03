@@ -1,0 +1,36 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: setup
+  image: mingc/android-build-box
+  commands:
+  - chmod +x ./gradlew
+
+- name: test
+  image: mingc/android-build-box
+  commands:
+  - ./gradlew test
+
+- name: test
+  image: mingc/android-build-box
+  commands:
+  - ./gradlew build
+
+- name: apk
+  image: mingc/android-build-box
+  commands:
+  - ./gradlew assembleRelease
+  when:
+    event: tag
+
+- name: publish
+  image: plugins/gitea-release
+  settings:
+    api_key: 
+      from_secret: gitea-api-key
+    base_url: https://git.jnns.de
+    files: ./app/build/outputs/apk/*
+  when:
+    event: tag
